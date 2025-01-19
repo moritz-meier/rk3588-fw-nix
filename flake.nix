@@ -59,7 +59,7 @@
       };
     in
     {
-      packages.${system} = {
+      packages.${system} = rec {
 
         spl-loader = pkgs.runCommand "spl-loader" { nativeBuildInputs = [ ]; } ''
 
@@ -93,6 +93,52 @@
               pushd arch/arm64/boot/dts
               find -type f -name \*.dtb -exec install -D {} $out/dtb/{} \;
               popd
+            '';
+
+        idblock = pkgs.runCommand "idblock" { nativeBuildInputs = [ pkgs.ubootTools ]; } ''
+          cp -r -- ${rkbin-src} ./source
+          chmod -R a+rwX ./source
+          cd ./source
+
+          DDRBIN=$(grep '^FlashData' ./RKBOOT/RK3588MINIALL.ini | cut -d = -f 2-)
+          SPL=$(grep '^FlashBoot' ./RKBOOT/RK3588MINIALL.ini | cut -d = -f 2-)
+
+          mkimage -n rk3588 -T rksd -d $DDRBIN:$SPL idblock.bin
+
+          mkdir $out
+          cp idblock.bin $out/idblock.bin
+        '';
+
+        fit =
+          pkgs.runCommand "fit"
+            {
+              nativeBuildInputs = [
+                pkgs.ubootTools
+                (pkgs.python3.withPackages (pyPkgs: [ pyPkgs.pyelftools ]))
+              ];
+            }
+            ''
+              cp -r -- ${rkbin-src} ./rkbin
+              chmod -R a+rwX ./rkbin
+
+              cp -r -- ${edk2-src} ./edk2-rk3588
+              chmod -R a+rwX ./edk2-rk3588
+
+              cp -r -- ${edk2} ./foo
+
+              patchShebangs ./edk2-rk3588/misc/extractbl31.py
+
+              BL31=$(grep '^PATH=.*_bl31_' ./rkbin/RKTRUST/RK3588TRUST.ini | cut -d = -f 2-)
+              BL32=$(grep '^PATH=.*_bl32_' ./rkbin/RKTRUST/RK3588TRUST.ini | cut -d = -f 2-)
+
+              ./edk2-rk3588/misc/extractbl31.py ./rkbin/$BL31
+              if [ ! -f bl31_0x000f0000.bin ]; then
+                # Not used but FIT expects it.
+                touch bl31_0x000f0000.bin
+              fi
+
+              ls -lah ./
+              mkdir $out
             '';
 
         atf = pkgsAarch64.stdenv.mkDerivation {
