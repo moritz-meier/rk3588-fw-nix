@@ -37,6 +37,17 @@
         };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
+
+        boot-bin = pkgs.boot-bin { inherit uboot; };
+
+        default = pkgs.buildEnv {
+          name = "edk2-rk3588";
+
+          paths = [
+            loader
+            boot-bin
+          ];
+        };
       };
 
       devShells.${system}.default = pkgs.mkShell {
