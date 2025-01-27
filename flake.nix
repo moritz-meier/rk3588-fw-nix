@@ -24,8 +24,19 @@
 
     in
     {
-      packages.${system} = {
+      packages.${system} = rec {
+        loader = pkgs.rkbin-loader { };
+        tpl = pkgs.rkbin-tpl { };
+        bl31 = pkgs.rkbin-bl31 { };
+        bl32 = pkgs.rkbin-bl32 { };
 
+        atf = pkgs.atf { };
+        uboot = pkgs.uboot {
+          inherit tpl bl31;
+          defconfig = "orangepi-5-plus-rk3588_defconfig";
+        };
+
+        edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
       };
 
       devShells.${system}.default = pkgs.mkShell {
