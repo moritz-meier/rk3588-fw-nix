@@ -15,5 +15,5 @@ runCommand "rkbin-bl32" { } ''
   BL32=$(grep '^PATH=.*_bl32_' ${rkbin-src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)
   BL32=${rkbin-src}/$BL32
 
-  cp -- $BL32 $out/bl32.elf
+  cp -- $BL32 $out/bl32.bin
 ''

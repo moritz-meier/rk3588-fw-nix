@@ -29,6 +29,7 @@
     "u-boot-rockchip.bin"
     "u-boot-rockchip-spi.bin"
     "spl/u-boot-spl-dtb.bin"
+    "spl/u-boot-spl.dtb"
   ];
 }).overrideAttrs
   (

@@ -10,5 +10,6 @@ final: prev: {
   edk2-base-tools = final.callPackage ./pkgs/edk2-base-tools.nix { };
   edk2 = final.callPackage ./pkgs/edk2.nix { };
 
+  boot-fit = final.callPackage ./pkgs/boot-fit.nix { };
   boot-bin = final.callPackage ./pkgs/boot-bin.nix { };
 }

@@ -25,18 +25,25 @@
     in
     {
       packages.${system} = rec {
-        loader = pkgs.rkbin-loader { };
-        tpl = pkgs.rkbin-tpl { };
-        bl31 = pkgs.rkbin-bl31 { };
-        bl32 = pkgs.rkbin-bl32 { };
+        rkbin-loader = pkgs.rkbin-loader { };
+        rkbin-tpl = pkgs.rkbin-tpl { };
+        rkbin-bl31 = pkgs.rkbin-bl31 { };
+        rkbin-bl32 = pkgs.rkbin-bl32 { };
 
         atf = pkgs.atf { };
         uboot = pkgs.uboot {
-          inherit tpl bl31;
+          tpl = rkbin-tpl;
+          bl31 = atf;
           defconfig = "orangepi-5-plus-rk3588_defconfig";
         };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
+
+        boot-fit = pkgs.boot-fit {
+          bl31 = atf;
+          bl32 = rkbin-bl32;
+          inherit uboot edk2;
+        };
 
         boot-bin = pkgs.boot-bin { inherit uboot; };
 
@@ -44,7 +51,8 @@
           name = "edk2-rk3588";
 
           paths = [
-            loader
+            rkbin-loader
+            boot-fit
             boot-bin
           ];
         };
