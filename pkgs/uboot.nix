@@ -23,6 +23,9 @@
   extraMeta.platforms = [ "aarch64-linux" ];
   BL31 = "${bl31}/bl31.elf";
   ROCKCHIP_TPL = "${tpl}/tpl.bin";
+  extraConfig = ''
+    CONFIG_SYS_SPI_U_BOOT_OFFS=0x00100000
+  '';
   filesToInstall = [
     "u-boot.itb"
     "idbloader.img"

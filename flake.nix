@@ -30,41 +30,54 @@
         rkbin-bl31 = pkgs.rkbin-bl31 { };
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        atf = pkgs.atf { };
+        #atf = pkgs.atf { };
+        #uboot = pkgs.uboot-spl { tpl = rkbin-tpl; };
+
         uboot = pkgs.uboot {
           tpl = rkbin-tpl;
-          bl31 = atf;
+          bl31 = rkbin-bl31;
           defconfig = "orangepi-5-plus-rk3588_defconfig";
         };
+
+        uboot-tools = pkgs.uboot-tools;
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 
         boot-fit = pkgs.boot-fit {
-          bl31 = atf;
+          bl31 = rkbin-bl31;
           bl32 = rkbin-bl32;
           inherit uboot edk2;
         };
 
-        boot-bin = pkgs.boot-bin { inherit uboot; };
+        boot-bin = pkgs.boot-bin {
+          inherit uboot boot-fit;
+        };
 
         default = pkgs.buildEnv {
           name = "edk2-rk3588";
 
           paths = [
             rkbin-loader
-            boot-fit
             boot-bin
           ];
         };
       };
 
-      devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          binwalk
-          dtc
-          rkdeveloptool
-          git-subrepo
-        ];
+      devShells.${system} = {
+        default = pkgs.mkShell {
+
+          packages = with pkgs; [
+            binwalk
+            dtc
+            rkdeveloptool
+            git-subrepo
+            ncurses
+            gcc
+            bison
+            flex
+            pkg-config
+          ];
+        };
       };
 
       # for `nix fmt`

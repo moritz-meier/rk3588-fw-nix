@@ -6,6 +6,8 @@ final: prev: {
 
   atf = final.callPackage ./pkgs/atf.nix { };
   uboot = final.callPackage ./pkgs/uboot.nix { };
+  uboot-spl = final.callPackage ./pkgs/uboot-spl.nix { };
+  uboot-tools = final.callPackage ./pkgs/uboot-tools.nix { };
 
   edk2-base-tools = final.callPackage ./pkgs/edk2-base-tools.nix { };
   edk2 = final.callPackage ./pkgs/edk2.nix { };

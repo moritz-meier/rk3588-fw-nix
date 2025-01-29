@@ -59,7 +59,8 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
   '';
 
   buildPhase = ''
-    build -a AARCH64 -b RELEASE -t GCC5 -p $PLATFORM -n $NIX_BUILD_CORES
+    build -a AARCH64 -b RELEASE -t GCC5 -p $PLATFORM -n $NIX_BUILD_CORES \
+      --pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000 
   '';
 
   installPhase = ''
