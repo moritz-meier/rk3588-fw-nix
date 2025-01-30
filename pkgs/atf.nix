@@ -1,17 +1,11 @@
 {
-  fetchFromGitLab,
   stdenv,
   pkgsCross,
+  atf-src,
 }:
 {
   plat ? "rk3588",
-  atf-src ? fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "trusted-firmware-a";
-    rev = "rk3588";
-    hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
-  },
+
 }:
 stdenv.mkDerivation {
   name = "arm-trusted-firmware";

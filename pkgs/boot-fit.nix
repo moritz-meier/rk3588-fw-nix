@@ -3,7 +3,6 @@
   dtc,
   python3,
   pkg-config,
-  uboot-tools,
 }:
 {
   bl31,
@@ -27,7 +26,7 @@ stdenv.mkDerivation {
   ];
 
   nativeBuildInputs = [
-    uboot-tools
+    uboot
     dtc
     (python3.withPackages (pyPkgs: [ pyPkgs.pyelftools ]))
     pkg-config
@@ -40,6 +39,7 @@ stdenv.mkDerivation {
     mkdir ./source
 
     cp -- ${edk2}/FV/BL33_AP_UEFI.Fv ./source/
+    cp -- ${bl31}/bl31.elf ./source/
     cp -- ${bl32}/bl32.bin ./source/
     cp -- ${uboot}/u-boot-spl.dtb ./source/
     cp -- ${rk3588-uefi-its} ./source/rk3588-uefi.its
@@ -57,7 +57,7 @@ stdenv.mkDerivation {
 
   buildPhase = ''
 
-    ../extractbl31.py ${bl31}/bl31.elf
+    ../extractbl31.py ./bl31.elf
     if [ ! -f bl31_0x000f0000.bin ]; then
         # Not used but FIT expects it.
         touch bl31_0x000f0000.bin

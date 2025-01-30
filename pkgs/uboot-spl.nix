@@ -1,15 +1,10 @@
 {
-  fetchgit,
   runCommand,
   ubootTools,
+  edk2-rk3588-src,
 }:
 {
   tpl,
-  edk2-rk3588-src ? fetchgit {
-    url = "https://github.com/edk2-porting/edk2-rk3588.git";
-    hash = "sha256-3awEMdFMGYsH18/wjQDkpMoZgWc4sfnm4ttgUof4fl4=";
-    fetchSubmodules = true;
-  },
 }:
 
 runCommand "uboot-spl" { nativeBuildInputs = [ ubootTools ]; } ''

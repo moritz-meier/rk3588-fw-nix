@@ -7,11 +7,44 @@ final: prev: {
   atf = final.callPackage ./pkgs/atf.nix { };
   uboot = final.callPackage ./pkgs/uboot.nix { };
   uboot-spl = final.callPackage ./pkgs/uboot-spl.nix { };
-  uboot-tools = final.callPackage ./pkgs/uboot-tools.nix { };
 
   edk2-base-tools = final.callPackage ./pkgs/edk2-base-tools.nix { };
   edk2 = final.callPackage ./pkgs/edk2.nix { };
 
   boot-fit = final.callPackage ./pkgs/boot-fit.nix { };
   boot-bin = final.callPackage ./pkgs/boot-bin.nix { };
+
+  atf-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "trusted-firmware-a";
+    rev = "rk3588";
+    hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
+  };
+  uboot-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "u-boot";
+    rev = "rk3588";
+    hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
+  };
+  linux-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "linux";
+    rev = "rk3588";
+    hash = "sha256-t+dtZHyIpPGd/ED/GiQTr9GMTUeBefH8cDt6KuHTmpw=";
+  };
+  edk2-rk3588-src = final.fetchgit {
+    url = "https://github.com/edk2-porting/edk2-rk3588.git";
+    hash = "sha256-3awEMdFMGYsH18/wjQDkpMoZgWc4sfnm4ttgUof4fl4=";
+    fetchSubmodules = true;
+  };
+  rkbin-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "rkbin";
+    rev = "master";
+    hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
+  };
 }

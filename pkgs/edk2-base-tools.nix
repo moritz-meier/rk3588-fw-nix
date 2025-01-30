@@ -1,15 +1,10 @@
 {
-  fetchgit,
   stdenv,
   libuuid,
   python3,
+  edk2-rk3588-src,
 }:
 {
-  edk2-rk3588-src ? fetchgit {
-    url = "https://github.com/edk2-porting/edk2-rk3588.git";
-    hash = "sha256-3awEMdFMGYsH18/wjQDkpMoZgWc4sfnm4ttgUof4fl4=";
-    fetchSubmodules = true;
-  },
 }:
 stdenv.mkDerivation rec {
   name = "edk2-base-tools";

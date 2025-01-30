@@ -1,17 +1,10 @@
 {
-  fetchFromGitLab,
   runCommand,
+  rkbin-src,
 }:
 
 {
   rkboot-config ? "RK3588MINIALL.ini",
-  rkbin-src ? fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "rkbin";
-    rev = "master";
-    hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
-  },
 }:
 
 runCommand "rkbin-loader" { } ''

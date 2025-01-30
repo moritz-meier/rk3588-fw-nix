@@ -1,22 +1,12 @@
-{ fetchFromGitLab, pkgsCross }:
+{
+  pkgsCross,
+  uboot-src,
+  linux-src,
+}:
 {
   defconfig,
   tpl,
   bl31,
-  uboot-src ? fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "u-boot";
-    rev = "rk3588";
-    hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
-  },
-  linux-src ? fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "linux";
-    rev = "rk3588";
-    hash = "sha256-t+dtZHyIpPGd/ED/GiQTr9GMTUeBefH8cDt6KuHTmpw=";
-  },
 }:
 (pkgsCross.aarch64-multiplatform.buildUBoot {
   inherit defconfig;
@@ -25,12 +15,17 @@
   ROCKCHIP_TPL = "${tpl}/tpl.bin";
   extraConfig = ''
     CONFIG_SYS_SPI_U_BOOT_OFFS=0x00100000
+    CONFIG_LOG=y
+    CONFIG_SPL_LOG=y
+    CONFIG_SPL_LOG_MAX_LEVEL=7
+    CONFIG_SPL_LOG_CONSOLE=y
   '';
   filesToInstall = [
     "u-boot.itb"
     "idbloader.img"
     "u-boot-rockchip.bin"
     "u-boot-rockchip-spi.bin"
+    "spl/u-boot-spl"
     "spl/u-boot-spl-dtb.bin"
     "spl/u-boot-spl.dtb"
   ];
@@ -44,5 +39,12 @@
         cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./source/dts/upstream/src/arm64/
         chmod -R a+rwX ./source/dts/upstream/src/arm64
       '';
+
+      installPhase =
+        prev.installPhase
+        + ''
+          mkdir $out/bin
+          cp ./tools/mkimage $out/bin/
+        '';
     }
   )
