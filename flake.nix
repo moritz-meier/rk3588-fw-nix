@@ -31,15 +31,14 @@
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
         atf = pkgs.atf { };
-        # uboot = pkgs.uboot-spl { tpl = rkbin-tpl; };
+
+        #uboot = pkgs.uboot-blob { tpl = rkbin-tpl; };
 
         uboot = pkgs.uboot {
           tpl = rkbin-tpl;
           bl31 = atf;
           defconfig = "orangepi-5-plus-rk3588_defconfig";
         };
-
-        #uboot-tools = pkgs.uboot-tools;
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 
@@ -51,6 +50,7 @@
 
         boot-bin = pkgs.boot-bin {
           inherit uboot boot-fit;
+          write-gpt-blob = true;
         };
 
         default = pkgs.buildEnv {
