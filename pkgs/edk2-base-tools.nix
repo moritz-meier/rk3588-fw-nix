@@ -4,8 +4,6 @@
   python3,
   edk2-rk3588-src,
 }:
-{
-}:
 stdenv.mkDerivation rec {
   name = "edk2-base-tools";
 

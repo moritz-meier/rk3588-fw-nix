@@ -43,7 +43,7 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
     cd ./source
     mkdir -p Conf
 
-    export EDK_TOOLS_PATH=${edk2-base-tools { }}
+    export EDK_TOOLS_PATH=${edk2-base-tools}
     export PACKAGES_PATH="$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-rockchip:$PWD/devicetree:$PWD/edk2-non-osi:$PWD"
 
     config=$(grep -rl 'PLATFORM_NAME=${plat}' ./configs/)
