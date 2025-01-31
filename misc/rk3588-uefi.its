@@ -16,9 +16,12 @@
 			data = /incbin/("./BL33_AP_UEFI.Fv");
 			type = "standalone";
 			arch = "arm64";
-			os = "EDK2x";
+			os = "EDK2";
 			compression = "none";
 			load = <0x00200000>;
+			hash {
+				algo = "sha256";
+			};
 		};
 		atf-1 {
 			description = "ARM Trusted Firmware";
@@ -28,7 +31,9 @@
 			os = "arm-trusted-firmware";
 			compression = "none";
 			load = <0x00040000>;
-			entry = <0x00040000>;
+			hash {
+				algo = "sha256";
+			};
 		};
 		atf-2 {
 			description = "ARM Trusted Firmware";
@@ -38,6 +43,9 @@
 			os = "arm-trusted-firmware";
 			compression = "none";
 			load = <0x000f0000>;
+			hash {
+				algo = "sha256";
+			};
 		};
 		atf-3 {
 			description = "ARM Trusted Firmware";
@@ -47,6 +55,9 @@
 			os = "arm-trusted-firmware";
 			compression = "none";
 			load = <0xff100000>;
+			hash {
+				algo = "sha256";
+			};
 		};
 		optee {
 			description = "OP-TEE";
@@ -56,6 +67,9 @@
 			os = "op-tee";
 			compression = "none";
 			load = <0x8400000>;
+			hash {
+				algo = "sha256";
+			};
 		};
 		fdt {
 			description = "UEFI dtb";
@@ -63,10 +77,12 @@
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
+			hash {
+				algo = "sha256";
+			};
 		};
 		nvdata {
 			description = "UEFI Non-Volatile Data";
-			data = "";
 			data-position = <0x006C0000>; /* 0x007C0000 - 0x100000 FIT offset */
 			data-size = <0x00030000>; /* NV_VARIABLE_STORE + NV_FTW_WORKING + NV_FTW_SPARE */
 			type = "standalone";
@@ -84,6 +100,12 @@
 			firmware = "atf-1";
 			loadables = "edk2", "atf-2", "atf-3", "optee", "nvdata";
 			fdt = "fdt";
+			signature {
+				algo = "sha256,rsa2048";
+				padding = "pss";
+				key-name-hint = "dev";
+				sign-images = "fdt", "firmware", "loadables";
+			};
 		};
 	};
 };
