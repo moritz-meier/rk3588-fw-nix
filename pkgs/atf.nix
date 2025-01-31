@@ -1,11 +1,12 @@
 {
+  lib,
   stdenv,
   pkgsCross,
   atf-src,
 }:
 {
   plat ? "rk3588",
-
+  logging ? false,
 }:
 stdenv.mkDerivation {
   name = "arm-trusted-firmware";
@@ -35,7 +36,7 @@ stdenv.mkDerivation {
     unset STRINGS
     unset STRIP
 
-    make CROSS_COMILE=${stdenv.cc.targetPrefix} PLAT=${plat} bl31
+    make CROSS_COMILE=${stdenv.cc.targetPrefix} PLAT=${plat} ${lib.strings.optionalString logging "LOG_LEVEL=50"} bl31
   '';
 
   installPhase = ''

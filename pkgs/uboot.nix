@@ -1,4 +1,5 @@
 {
+  lib,
   pkgsCross,
   uboot-src,
   linux-src,
@@ -7,6 +8,7 @@
   defconfig,
   tpl,
   bl31,
+  logging ? false,
 }:
 (pkgsCross.aarch64-multiplatform.buildUBoot {
   inherit defconfig;
@@ -15,10 +17,15 @@
   ROCKCHIP_TPL = "${tpl}/tpl.bin";
   extraConfig = ''
     CONFIG_SYS_SPI_U_BOOT_OFFS=0x00100000
-    CONFIG_LOG=y
-    CONFIG_SPL_LOG=y
-    CONFIG_SPL_LOG_MAX_LEVEL=7
-    CONFIG_SPL_LOG_CONSOLE=y
+    CONFIG_TEXT_BASE=0x00200000
+
+    ${lib.strings.optionalString logging ''
+      # CONFIG_LOG=y
+      # CONFIG_LOG_MAX_LEVEL=7
+      # CONFIG_LOG_CONSOLE=y
+      # CONFIG_SPL_LOG=y
+      # CONFIG_SPL_LOG_MAX_LEVEL=7
+      # CONFIG_SPL_LOG_CONSOLE=y''}
   '';
   filesToInstall = [
     "u-boot.itb"
