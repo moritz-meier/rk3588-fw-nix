@@ -32,16 +32,16 @@
 
         atf = pkgs.atf { };
 
-        uboot = pkgs.uboot-blob {
-          tpl = rkbin-tpl;
-        };
-
-        # uboot = pkgs.uboot {
+        # uboot = pkgs.uboot-blob {
         #   tpl = rkbin-tpl;
-        #   bl31 = atf;
-        #   defconfig = "orangepi-5-plus-rk3588_defconfig";
-        #   logging = true;
         # };
+
+        uboot = pkgs.uboot {
+          tpl = rkbin-tpl;
+          bl31 = atf;
+          defconfig = "orangepi-5-plus-rk3588_defconfig";
+          logging = true;
+        };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 
