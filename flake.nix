@@ -40,7 +40,7 @@
           tpl = rkbin-tpl;
           bl31 = atf;
           defconfig = "orangepi-5-plus-rk3588_defconfig";
-          logging = true;
+          logging = false;
         };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
@@ -56,12 +56,19 @@
           write-gpt-blob = true;
         };
 
+        flash-spi-cmd = pkgs.flash-spi-cmd {
+          inherit boot-bin;
+          loader = rkbin-loader;
+        };
+
         default = pkgs.buildEnv {
           name = "edk2-rk3588";
 
           paths = [
             rkbin-loader
             boot-bin
+            boot-fit
+            flash-spi-cmd
           ];
         };
       };

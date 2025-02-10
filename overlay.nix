@@ -14,6 +14,8 @@ final: prev: {
   boot-fit = final.callPackage ./pkgs/boot-fit.nix { };
   boot-bin = final.callPackage ./pkgs/boot-bin.nix { };
 
+  flash-spi-cmd = final.callPackage ./pkgs/flash-spi-cmd.nix { };
+
   atf-src = final.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
@@ -21,14 +23,14 @@ final: prev: {
     rev = "rk3588";
     hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
   };
-  uboot-src = final.fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "u-boot";
-    rev = "rk3588";
-    hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
-  };
-  # uboot-src = ./u-boot;
+  # uboot-src = final.fetchFromGitLab {
+  #   domain = "gitlab.collabora.com";
+  #   owner = "hardware-enablement/rockchip-3588";
+  #   repo = "u-boot";
+  #   rev = "rk3588";
+  #   hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
+  # };
+  uboot-src = ./srcs/uboot;
   linux-src = final.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
