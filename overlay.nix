@@ -5,6 +5,8 @@ final: prev: {
   rkbin-bl32 = final.callPackage ./pkgs/rkbin-bl32.nix { };
 
   atf = final.callPackage ./pkgs/atf.nix { };
+  optee = final.callPackage ./pkgs/optee.nix { };
+
   uboot = final.callPackage ./pkgs/uboot.nix { };
   uboot-blob = final.callPackage ./pkgs/uboot-blob.nix { };
 
@@ -22,6 +24,12 @@ final: prev: {
     repo = "trusted-firmware-a";
     rev = "rk3588";
     hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
+  };
+  optee-src = final.fetchFromGitHub {
+    owner = "OP-TEE";
+    repo = "optee_os";
+    rev = "master";
+    hash = "sha256-5dVpYXBvpX50LSoqTHhgkRcfL2yXbqbn7/r4rpVQntA=";
   };
   # uboot-src = final.fetchFromGitLab {
   #   domain = "gitlab.collabora.com";

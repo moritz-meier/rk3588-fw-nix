@@ -36,7 +36,11 @@ stdenv.mkDerivation {
     unset STRINGS
     unset STRIP
 
-    make CROSS_COMILE=${stdenv.cc.targetPrefix} PLAT=${plat} ${lib.strings.optionalString logging "LOG_LEVEL=50"} bl31
+    make -j $NIX_BUILD_CORES \
+      CROSS_COMILE=${pkgsCross.aarch64-embedded.stdenv.cc.targetPrefix} \
+      PLAT=${plat} \
+      ${lib.strings.optionalString logging "LOG_LEVEL=50"} \
+      bl31
   '';
 
   installPhase = ''

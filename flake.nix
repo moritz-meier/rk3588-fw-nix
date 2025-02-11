@@ -31,24 +31,25 @@
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
         atf = pkgs.atf { };
+        optee = pkgs.optee { };
 
-        # uboot = pkgs.uboot-blob {
-        #   tpl = rkbin-tpl;
-        # };
-
-        uboot = pkgs.uboot {
+        uboot = pkgs.uboot-blob {
           tpl = rkbin-tpl;
-          bl31 = atf;
-          defconfig = "orangepi-5-plus-rk3588_defconfig";
-          logging = false;
         };
+
+        # uboot = pkgs.uboot {
+        #   tpl = rkbin-tpl;
+        #   bl31 = atf;
+        #   defconfig = "orangepi-5-plus-rk3588_defconfig";
+        #   logging = false;
+        # };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 
         boot-fit = pkgs.boot-fit {
           inherit uboot edk2;
           bl31 = atf;
-          bl32 = rkbin-bl32;
+          bl32 = optee;
         };
 
         boot-bin = pkgs.boot-bin {
@@ -87,6 +88,16 @@
             flex
             pkg-config
             ubootTools
+            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.cc
+            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.bintools
+            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.cc
+            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.bintools
+            (python3.withPackages (
+              pyPkgs: with pyPkgs; [
+                cryptography
+                pyelftools
+              ]
+            ))
           ];
         };
       };
