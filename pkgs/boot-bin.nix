@@ -1,7 +1,7 @@
 { runCommand, edk2-rk3588-src }:
 {
-  uboot,
   boot-fit,
+  uboot,
   write-gpt-blob ? false,
 }:
 

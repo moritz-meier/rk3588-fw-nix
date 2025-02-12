@@ -1,6 +1,6 @@
 {
-  stdenv,
   autoPatchelfHook,
+  stdenv,
   edk2-rk3588-src,
 }:
 {

@@ -1,7 +1,7 @@
 {
+  autoPatchelfHook,
   lib,
   pkgsCross,
-  autoPatchelfHook,
   uboot-src,
   linux-src,
 }:

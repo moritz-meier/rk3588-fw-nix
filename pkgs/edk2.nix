@@ -1,10 +1,10 @@
 {
-  pkgsCross,
-  python3,
   acpica-tools,
-  llvmPackages,
   dtc,
   edk2-base-tools,
+  llvmPackages,
+  pkgsCross,
+  python3,
   edk2-rk3588-src,
 }:
 {

@@ -1,7 +1,7 @@
 {
-  stdenv,
   libuuid,
   python3,
+  stdenv,
   edk2-rk3588-src,
 }:
 stdenv.mkDerivation rec {

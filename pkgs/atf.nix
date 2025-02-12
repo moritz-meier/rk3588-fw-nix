@@ -1,7 +1,7 @@
 {
   lib,
-  stdenv,
   pkgsCross,
+  stdenv,
   atf-src,
 }:
 {

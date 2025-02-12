@@ -79,19 +79,19 @@
 
           packages = with pkgs; [
             binwalk
+            bison
             dtc
-            rkdeveloptool
+            flex
+            gcc
             git-subrepo
             ncurses
-            gcc
-            bison
-            flex
             pkg-config
-            ubootTools
-            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.cc
             pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.bintools
-            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.cc
+            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.cc
             pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.bintools
+            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.cc
+            rkdeveloptool
+            ubootTools
             (python3.withPackages (
               pyPkgs: with pyPkgs; [
                 cryptography

@@ -1,7 +1,7 @@
 {
-  stdenv,
   pkgsCross,
   python3,
+  stdenv,
   optee-src,
 }:
 {

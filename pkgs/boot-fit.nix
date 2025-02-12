@@ -1,8 +1,8 @@
 {
-  stdenv,
   dtc,
-  python3,
   pkg-config,
+  python3,
+  stdenv,
 }:
 {
   bl31,
