@@ -9,6 +9,7 @@
   defconfig,
   tpl,
   bl31,
+  useUpstreamDts ? true,
   logging ? false,
 }:
 (pkgsCross.aarch64-multiplatform.buildUBoot {
@@ -48,12 +49,10 @@
 
       postPatch =
         prev.postPatch
-        + ''
-          ls -lah ./
-
-          # rm -rf ./dts/upstream/arm64/*/
-          # cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./dts/upstream/src/arm64/
-          # chmod -R a+rwX ./dts/upstream/src/arm64
+        + lib.strings.optionalString useUpstreamDts ''
+          rm -rf ./dts/upstream/arm64/*/
+          cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./dts/upstream/src/arm64/
+          chmod -R a+rwX ./dts/upstream/src/arm64
         '';
 
       installPhase =

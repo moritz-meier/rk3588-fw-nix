@@ -2,13 +2,16 @@
   acpica-tools,
   dtc,
   edk2-base-tools,
+  lib,
   llvmPackages,
   pkgsCross,
   python3,
   edk2-rk3588-src,
+  linux-src,
 }:
 {
   plat,
+  useUpstreamDts ? true,
 }:
 pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
   name = "edk2";
@@ -35,9 +38,15 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
     chmod -R a+rwX ./source
   '';
 
-  patchPhase = ''
-    patchShebangs ./source
-  '';
+  patchPhase =
+    ''
+      patchShebangs ./source
+    ''
+    + lib.strings.optionalString useUpstreamDts ''
+      rm -rf ./source/devicetree/mainline/upstream/arm64/*/
+      cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./source/devicetree/mainline/upstream/src/arm64/
+      chmod -R a+rwX ./source/devicetree/mainline/upstream/src/arm64/
+    '';
 
   configurePhase = ''
     cd ./source

@@ -43,7 +43,6 @@
           tpl = rkbin-tpl;
           bl31 = atf;
           defconfig = "orangepi-5-plus-rk3588_defconfig";
-          logging = false;
         };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
