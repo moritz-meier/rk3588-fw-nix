@@ -108,6 +108,6 @@
       # for `nix flake check`
       checks.${system}.formatting = treefmtEval.config.build.check self;
 
-      overlays.default = import ./overlay.nix;
+      overlays.default = import ./pkgs.nix;
     };
 }
