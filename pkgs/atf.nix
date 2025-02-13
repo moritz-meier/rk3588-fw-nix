@@ -1,52 +1,36 @@
 {
   lib,
-  pkgsCross,
   stdenv,
+  buildPackages,
+  runCommand,
   atf-src,
 }:
 {
   plat ? "rk3588",
   logging ? false,
 }:
-stdenv.mkDerivation {
-  name = "arm-trusted-firmware";
+let
+  x =
+    runCommand "arm-trusted-firmware"
+      {
+        nativeBuildInputs = [
+          stdenv.cc.cc
+          buildPackages.pkgsCross.aarch64-multiplatform.bintools.bintools
+        ];
+      }
+      ''
+        cp -r -- ${atf-src} ./source
+        chmod a+rwX ./source
+        cd ./source
 
-  src = atf-src;
+        make -j $NIX_BUILD_CORES \
+          CROSS_COMILE=${stdenv.cc.targetPrefix} \
+          PLAT=${plat} \
+          ${lib.strings.optionalString logging "LOG_LEVEL=50"} \
+          bl31
 
-  nativeBuildInputs = [
-    pkgsCross.aarch64-multiplatform.binutils
-    pkgsCross.aarch64-embedded.stdenv.cc.cc
-  ];
-
-  dontPatch = true;
-  dontConfigure = true;
-
-  buildPhase = ''
-    unset AR
-    unset AS
-    unset CC
-    unset CXX
-    unset LD
-    unset NM
-    unset OBJCOPY
-    unset OBJDUMP
-    unset RANLIB
-    unset READELF
-    unset SIZE
-    unset STRINGS
-    unset STRIP
-
-    make -j $NIX_BUILD_CORES \
-      CROSS_COMILE=${pkgsCross.aarch64-embedded.stdenv.cc.targetPrefix} \
-      PLAT=${plat} \
-      ${lib.strings.optionalString logging "LOG_LEVEL=50"} \
-      bl31
-  '';
-
-  installPhase = ''
-    mkdir $out
-    cp ./build/${plat}/release/bl31/bl31.elf $out/bl31.elf
-  '';
-
-  dontFixup = true;
-}
+        mkdir $out
+        cp -- ./build/${plat}/release/bl31/bl31.elf $out/bl31.elf
+      '';
+in
+x // { inherit buildPackages; }

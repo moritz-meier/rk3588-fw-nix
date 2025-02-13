@@ -30,7 +30,7 @@
         rkbin-bl31 = pkgs.rkbin-bl31 { };
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        atf = pkgs.atf { };
+        atf = pkgs.pkgsCross.aarch64-embedded.atf { };
         optee = pkgs.optee { };
 
         # Prebuild uboot/mkimage blob
