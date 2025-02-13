@@ -34,16 +34,17 @@
         optee = pkgs.optee { };
 
         # Prebuild uboot/mkimage blob
-        # uboot = pkgs.uboot-blob {
-        #   tpl = rkbin-tpl;
-        # };
+        uboot = pkgs.uboot-blob {
+          tpl = rkbin-tpl;
+        };
 
         # Upstream uboot/mkimage build
-        uboot = pkgs.uboot {
-          tpl = rkbin-tpl;
-          bl31 = atf;
-          defconfig = "orangepi-5-plus-rk3588_defconfig";
-        };
+        # does not support writing nvdata to spi flash: https://github.com/edk2-porting/edk2-rk3588/issues/188
+        # uboot = pkgs.uboot {
+        #   tpl = rkbin-tpl;
+        #   bl31 = atf;
+        #   defconfig = "orangepi-5-plus-rk3588_defconfig";
+        # };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 

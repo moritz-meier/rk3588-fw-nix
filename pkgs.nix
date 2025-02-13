@@ -31,14 +31,13 @@ final: prev: {
     rev = "master";
     hash = "sha256-5dVpYXBvpX50LSoqTHhgkRcfL2yXbqbn7/r4rpVQntA=";
   };
-  # uboot-src = final.fetchFromGitLab {
-  #   domain = "gitlab.collabora.com";
-  #   owner = "hardware-enablement/rockchip-3588";
-  #   repo = "u-boot";
-  #   rev = "rk3588";
-  #   hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
-  # };
-  uboot-src = ./srcs/uboot;
+  uboot-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "u-boot";
+    rev = "rk3588";
+    hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
+  };
   linux-src = final.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
