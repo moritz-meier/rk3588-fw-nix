@@ -5,9 +5,10 @@
   optee-src,
 }:
 {
+  plat ? "rockchip-rk3588",
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "optee";
+  name = "optee-${plat}";
 
   src = optee-src;
 
@@ -38,7 +39,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       CROSS_COMPILE_core=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix} \
       CROSS_COMPILE_ta_arm32=${pkgsCross.armv7l-hf-multiplatform.stdenv.cc.targetPrefix} \
       CROSS_COMPILE_ta_arm64=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix} \
-      PLATFORM=rockchip-rk3588
+      PLATFORM=${plat}
   '';
 
   installPhase = ''

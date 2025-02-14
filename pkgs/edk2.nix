@@ -15,7 +15,7 @@
   useUpstreamDts ? true,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: rec {
-  name = "edk2";
+  name = "edk2-rk3588";
 
   src = edk2-rk3588-src;
 

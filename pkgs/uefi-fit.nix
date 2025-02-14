@@ -13,7 +13,7 @@
 }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "uefi-edk2-rk3588-fit";
+  name = "edk2-rk3588-uefi-fit";
 
   srcs = [
     bl31

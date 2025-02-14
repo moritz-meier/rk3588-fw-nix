@@ -1,7 +1,7 @@
 { stdenvNoCC, edk2-rk3588-src }:
 { }:
 stdenvNoCC.mkDerivation (finalAttrs: rec {
-  name = "gpt-blob";
+  name = "edk2-rk3588-gpt-blob";
 
   src = edk2-rk3588-src;
 

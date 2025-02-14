@@ -9,7 +9,7 @@
 }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "uefi-edk2-rk3588";
+  name = "edk2-rk3588-uefi";
 
   srcs = [
     gpt

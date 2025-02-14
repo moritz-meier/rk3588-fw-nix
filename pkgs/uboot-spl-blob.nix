@@ -8,7 +8,7 @@
 }:
 
 stdenv.mkDerivation (finalAttrs: {
-  name = "uboot-spl-blob";
+  name = "edk2-rk3588-uboot-spl-blob";
 
   srcs = [ edk2-rk3588-src ];
 

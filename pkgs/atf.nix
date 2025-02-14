@@ -9,7 +9,7 @@
   logging ? false,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "arm-trusted-firmware";
+  name = "arm-trusted-firmware-${plat}";
 
   src = atf-src;
 

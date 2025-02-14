@@ -5,7 +5,7 @@
   edk2-rk3588-src,
 }:
 stdenv.mkDerivation rec {
-  name = "edk2-base-tools";
+  name = "edk2-rk3588-base-tools";
 
   src = edk2-rk3588-src;
 
