@@ -30,48 +30,47 @@
         rkbin-bl31 = pkgs.rkbin-bl31 { };
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        atf = pkgs.pkgsCross.aarch64-embedded.atf { };
+        gpt-blob = pkgs.gpt-blob { };
+
+        atf = pkgs.atf { };
         optee = pkgs.optee { };
 
-        # Prebuild uboot/mkimage blob
-        uboot = pkgs.uboot-blob {
-          tpl = rkbin-tpl;
+        uboot-spl-blob = pkgs.uboot-spl-blob {
+          tpl = rkbin-tpl.bin;
         };
 
-        # Upstream uboot/mkimage build
-        # does not support writing nvdata to spi flash: https://github.com/edk2-porting/edk2-rk3588/issues/188
-        # uboot = pkgs.uboot {
-        #   tpl = rkbin-tpl;
-        #   bl31 = atf;
-        #   defconfig = "orangepi-5-plus-rk3588_defconfig";
-        # };
+        uboot = pkgs.uboot {
+          defconfig = "orangepi-5-plus-rk3588_defconfig";
+          tpl = rkbin-tpl.bin;
+          bl31 = atf.elf;
+          bl32 = optee.elf;
+        };
 
         edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
 
-        boot-fit = pkgs.boot-fit {
-          inherit uboot edk2;
-          bl31 = atf;
-          bl32 = optee;
+        uefi-fit = pkgs.uefi-fit {
+          bl31 = rkbin-bl31.elf;
+          bl32 = rkbin-bl32.bin;
+          bl33 = edk2.fw;
+          dtb = uboot-spl-blob.spl.dtb;
+          mkimage = uboot-spl-blob;
         };
 
-        boot-bin = pkgs.boot-bin {
-          inherit uboot boot-fit;
-          write-gpt-blob = true;
+        uefi = pkgs.uefi-bin {
+          gpt = gpt-blob.bin;
+          idbloader = uboot-spl-blob.idbloader.bin;
+          fit = uefi-fit.fit;
         };
 
         flash-spi-cmd = pkgs.flash-spi-cmd {
-          inherit boot-bin;
-          loader = rkbin-loader;
+          loader = rkbin-loader.bin;
+          bin = uefi.boot.bin;
         };
 
         default = pkgs.buildEnv {
           name = "edk2-rk3588";
 
           paths = [
-            rkbin-loader
-            boot-bin
-            boot-fit
-            flash-spi-cmd
           ];
         };
       };
@@ -88,10 +87,6 @@
             git-subrepo
             ncurses
             pkg-config
-            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.bintools
-            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc.cc
-            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.bintools
-            pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc.cc
             rkdeveloptool
             ubootTools
             (python3.withPackages (

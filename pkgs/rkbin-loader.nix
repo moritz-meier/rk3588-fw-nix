@@ -1,22 +1,33 @@
 {
-  runCommand,
+  stdenvNoCC,
   rkbin-src,
 }:
-
 {
   rkboot-config ? "RK3588MINIALL.ini",
 }:
 
-runCommand "rkbin-loader" { } ''
+stdenvNoCC.mkDerivation (finalAttrs: {
+  name = "rkbin-loader";
 
-  cp -r -- ${rkbin-src}/ ./source
-  chmod -R a+rwX ./source
-  cd ./source
+  src = rkbin-src;
 
-  ./tools/boot_merger RKBOOT/${rkboot-config}
+  dontPatch = true;
+  dontConfigure = true;
 
-  loader=$(grep '^PATH=.*_loader_.*\.bin' ${rkbin-src}/RKBOOT/${rkboot-config} | cut -d = -f 2 -)
+  buildPhase = ''
+    ./tools/boot_merger RKBOOT/${rkboot-config}
+  '';
 
-  mkdir $out
-  cp -- $loader $out/
-''
+  installPhase = ''
+    loader="./$(grep '^PATH=.*_loader_.*\.bin' ./RKBOOT/${rkboot-config} | cut -d = -f 2 -)"
+
+    mkdir $out
+    cp -- $loader $out/spl-loader.bin
+  '';
+
+  dontFixup = true;
+
+  passthru = {
+    bin = "${finalAttrs.finalPackage.out}/spl-loader.bin";
+  };
+})

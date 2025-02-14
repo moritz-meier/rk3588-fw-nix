@@ -6,6 +6,7 @@
   llvmPackages,
   pkgsCross,
   python3,
+  stdenvNoCC,
   edk2-rk3588-src,
   linux-src,
 }:
@@ -13,7 +14,7 @@
   plat,
   useUpstreamDts ? true,
 }:
-pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
+stdenvNoCC.mkDerivation (finalAttrs: rec {
   name = "edk2";
 
   src = edk2-rk3588-src;
@@ -22,6 +23,8 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
     python3
     acpica-tools
     llvmPackages.libcxxClang
+    pkgsCross.aarch64-multiplatform.stdenv.cc
+    pkgsCross.aarch64-multiplatform.bintools
     dtc
   ];
 
@@ -36,20 +39,20 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
   unpackPhase = ''
     cp -r -- ${src} ./source
     chmod -R a+rwX ./source
+    cd ./source
   '';
 
   patchPhase =
     ''
-      patchShebangs ./source
+      patchShebangs .
     ''
     + lib.strings.optionalString useUpstreamDts ''
-      rm -rf ./source/devicetree/mainline/upstream/arm64/*/
-      cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./source/devicetree/mainline/upstream/src/arm64/
-      chmod -R a+rwX ./source/devicetree/mainline/upstream/src/arm64/
+      rm -rf ./devicetree/mainline/upstream/arm64/*/
+      cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./devicetree/mainline/upstream/src/arm64/
+      chmod -R a+rwX ./devicetree/mainline/upstream/src/arm64/
     '';
 
   configurePhase = ''
-    cd ./source
     mkdir -p Conf
 
     export EDK_TOOLS_PATH=${edk2-base-tools}
@@ -69,8 +72,12 @@ pkgsCross.aarch64-multiplatform.stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
-    cp -r ./Build/${plat}/RELEASE_GCC5/* $out/
+    cp -r ./Build/${plat}/RELEASE_GCC5/FV/BL33_AP_UEFI.Fv $out/
   '';
 
   dontFixup = true;
-}
+
+  passthru = {
+    fw = "${finalAttrs.finalPackage.out}/BL33_AP_UEFI.Fv";
+  };
+})

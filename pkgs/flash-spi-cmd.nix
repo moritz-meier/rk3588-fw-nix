@@ -1,16 +1,19 @@
 { runCommand, writeShellScript }:
-{ loader, boot-bin }:
+{
+  loader,
+  bin,
+}:
 
 let
   flash-spi-cmd = writeShellScript "flash-spi-cmd.sh" ''
-    rkdeveloptool db ${loader}/rk3588_spl_loader_v1.18.113.bin
+    rkdeveloptool db ${loader}
     rkdeveloptool ef
 
     rkdeveloptool rd
     sleep 2
 
-    rkdeveloptool db ${loader}/rk3588_spl_loader_v1.18.113.bin
-    rkdeveloptool wl 0 ${boot-bin}/boot.bin
+    rkdeveloptool db ${loader}
+    rkdeveloptool wl 0 ${bin}
 
     rkdeveloptool rd
   '';

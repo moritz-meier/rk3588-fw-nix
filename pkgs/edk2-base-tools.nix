@@ -17,15 +17,14 @@ stdenv.mkDerivation rec {
   unpackPhase = ''
     cp -r -- ${src}/ ./source
     chmod -R a+rwX ./source
+    cd ./source
   '';
 
   patchPhase = ''
-    patchShebangs ./source
+    patchShebangs .
   '';
 
   configurePhase = ''
-    cd source
-
     export PACKAGES_PATH=edk2:
     export EDK_TOOLS_PATH=edk2/BaseTools
     source edk2/edksetup.sh BaseTools

@@ -1,12 +1,12 @@
 {
   pkgsCross,
   python3,
-  stdenv,
+  stdenvNoCC,
   optee-src,
 }:
 {
 }:
-stdenv.mkDerivation {
+stdenvNoCC.mkDerivation (finalAttrs: {
   name = "optee";
 
   src = optee-src;
@@ -25,8 +25,9 @@ stdenv.mkDerivation {
   ];
 
   patchPhase = ''
-    patchShebangs ./.
+    patchShebangs .
   '';
+
   dontConfigure = true;
 
   buildPhase = ''
@@ -42,9 +43,14 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir $out
-    cp -R ./out/arm-plat-rockchip/core/tee.elf $out/bl32.elf
-    cp -R ./out/arm-plat-rockchip/core/tee.bin $out/bl32.bin
+    cp ./out/arm-plat-rockchip/core/tee.elf $out/
+    cp ./out/arm-plat-rockchip/core/tee.bin $out/
   '';
 
   dontFixup = true;
-}
+
+  passthru = {
+    elf = "${finalAttrs.finalPackage.out}/tee.elf";
+    bin = "${finalAttrs.finalPackage.out}/tee.bin";
+  };
+})

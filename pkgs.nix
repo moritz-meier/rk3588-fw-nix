@@ -4,17 +4,19 @@ final: prev: {
   rkbin-bl31 = final.callPackage ./pkgs/rkbin-bl31.nix { };
   rkbin-bl32 = final.callPackage ./pkgs/rkbin-bl32.nix { };
 
+  gpt-blob = final.callPackage ./pkgs/gpt-blob.nix { };
+
   atf = final.callPackage ./pkgs/atf.nix { };
   optee = final.callPackage ./pkgs/optee.nix { };
 
   uboot = final.callPackage ./pkgs/uboot.nix { };
-  uboot-blob = final.callPackage ./pkgs/uboot-blob.nix { };
+  uboot-spl-blob = final.callPackage ./pkgs/uboot-spl-blob.nix { };
 
   edk2-base-tools = final.callPackage ./pkgs/edk2-base-tools.nix { };
   edk2 = final.callPackage ./pkgs/edk2.nix { };
 
-  boot-fit = final.callPackage ./pkgs/boot-fit.nix { };
-  boot-bin = final.callPackage ./pkgs/boot-bin.nix { };
+  uefi-fit = final.callPackage ./pkgs/uefi-fit.nix { };
+  uefi-bin = final.callPackage ./pkgs/uefi-bin.nix { };
 
   flash-spi-cmd = final.callPackage ./pkgs/flash-spi-cmd.nix { };
 

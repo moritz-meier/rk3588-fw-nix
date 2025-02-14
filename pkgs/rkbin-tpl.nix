@@ -1,12 +1,30 @@
-{ runCommand, rkbin-src }:
+{
+  stdenvNoCC,
+  rkbin-src,
+}:
 {
   rkboot-config ? "RK3588MINIALL.ini",
 }:
-runCommand "rkbin-tpl" { } ''
-  mkdir $out
 
-  TPL=$(grep '^FlashData' ${rkbin-src}/RKBOOT/${rkboot-config} | cut -d = -f 2 -)
-  TPL=${rkbin-src}/$TPL
+stdenvNoCC.mkDerivation (finalAttrs: {
+  name = "rkbin-tpl";
 
-  cp -- $TPL $out/tpl.bin
-''
+  src = rkbin-src;
+
+  dontPatch = true;
+  dontConfigure = true;
+  dontBuild = true;
+
+  installPhase = ''
+    tpl="./$(grep '^FlashData' ./RKBOOT/${rkboot-config} | cut -d = -f 2 -)"
+
+    mkdir $out
+    cp -- $tpl $out/tpl.bin
+  '';
+
+  dontFixup = true;
+
+  passthru = {
+    bin = "${finalAttrs.finalPackage.out}/tpl.bin";
+  };
+})

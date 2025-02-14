@@ -13,7 +13,7 @@
 	images {
 		edk2 {
 			description = "UEFI";
-			data = /incbin/("./BL33_AP_UEFI.Fv");
+			data = /incbin/("@edk2@");
 			type = "standalone";
 			arch = "arm64";
 			os = "EDK2";
@@ -25,7 +25,7 @@
 		};
 		atf-1 {
 			description = "ARM Trusted Firmware";
-			data = /incbin/("./bl31_0x00040000.bin");
+			data = /incbin/("@atf-1@");
 			type = "firmware";
 			arch = "arm64";
 			os = "arm-trusted-firmware";
@@ -37,7 +37,7 @@
 		};
 		atf-2 {
 			description = "ARM Trusted Firmware";
-			data = /incbin/("./bl31_0x000f0000.bin");
+			data = /incbin/("@atf-2@");
 			type = "firmware";
 			arch = "arm64";
 			os = "arm-trusted-firmware";
@@ -49,7 +49,7 @@
 		};
 		atf-3 {
 			description = "ARM Trusted Firmware";
-			data = /incbin/("./bl31_0xff100000.bin");
+			data = /incbin/("@atf-3@");
 			type = "firmware";
 			arch = "arm64";
 			os = "arm-trusted-firmware";
@@ -61,7 +61,7 @@
 		};
 		optee {
 			description = "OP-TEE";
-			data = /incbin/("./bl32.bin");
+			data = /incbin/("@optee@");
 			type = "firmware";
 			arch = "arm64";
 			os = "op-tee";
@@ -73,7 +73,7 @@
 		};
 		fdt {
 			description = "UEFI dtb";
-			data = /incbin/("./u-boot-spl.dtb");
+			data = /incbin/("@fdt@");
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";

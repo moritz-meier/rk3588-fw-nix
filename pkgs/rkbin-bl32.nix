@@ -1,12 +1,30 @@
-{ runCommand, rkbin-src }:
+{
+  stdenvNoCC,
+  rkbin-src,
+}:
 {
   rktrust-config ? "RK3588TRUST.ini",
 }:
-runCommand "rkbin-bl32" { } ''
-  mkdir $out
 
-  BL32=$(grep '^PATH=.*_bl32_' ${rkbin-src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)
-  BL32=${rkbin-src}/$BL32
+stdenvNoCC.mkDerivation (finalAttrs: {
+  name = "rkbin-bl32";
 
-  cp -- $BL32 $out/bl32.bin
-''
+  src = rkbin-src;
+
+  dontPatch = true;
+  dontConfigure = true;
+  dontBuild = true;
+
+  installPhase = ''
+    bl32="./$(grep '^PATH=.*_bl32_' ./RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
+
+    mkdir $out
+    cp -- $bl32 $out/bl32.bin
+  '';
+
+  dontFixup = true;
+
+  passthru = {
+    bin = "${finalAttrs.finalPackage.out}/bl32.bin";
+  };
+})
