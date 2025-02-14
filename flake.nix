@@ -56,7 +56,7 @@
           mkimage = uboot-spl-blob;
         };
 
-        uefi = pkgs.uefi-bin {
+        uefi = pkgs.uefi {
           gpt = gpt-blob.bin;
           idbloader = uboot-spl-blob.idbloader.bin;
           fit = uefi-fit.fit;

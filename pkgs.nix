@@ -16,7 +16,7 @@ final: prev: {
   edk2 = final.callPackage ./pkgs/edk2.nix { };
 
   uefi-fit = final.callPackage ./pkgs/uefi-fit.nix { };
-  uefi-bin = final.callPackage ./pkgs/uefi-bin.nix { };
+  uefi = final.callPackage ./pkgs/uefi.nix { };
 
   flash-spi-cmd = final.callPackage ./pkgs/flash-spi-cmd.nix { };
 
