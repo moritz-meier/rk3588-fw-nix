@@ -44,9 +44,13 @@
           tpl = rkbin-tpl.bin;
           bl31 = atf.elf;
           bl32 = optee.elf;
+          dt-src = pkgs.dt-src;
         };
 
-        edk2 = pkgs.edk2 { plat = "OrangePi5Plus"; };
+        edk2 = pkgs.edk2 {
+          plat = "OrangePi5Plus";
+          dt-src = pkgs.dt-src;
+        };
 
         uefi-fit = pkgs.uefi-fit {
           bl31 = rkbin-bl31.elf;
@@ -83,6 +87,7 @@
             bison
             dtc
             flex
+            sd
             gcc
             git-subrepo
             ncurses

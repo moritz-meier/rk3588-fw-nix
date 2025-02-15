@@ -1,14 +1,15 @@
 {
-  stdenv,
-  writeText,
-  pkgsCross,
   bison,
   flex,
-  python3,
-  swig,
-  openssl,
   gnutls,
+  lib,
+  openssl,
   pkg-config,
+  pkgsCross,
+  python3,
+  stdenv,
+  swig,
+  writeText,
   uboot-src,
 }:
 {
@@ -16,6 +17,7 @@
   tpl,
   bl31,
   bl32,
+  dt-src,
   extraConfig ? ''
     CONFIG_SYS_SPI_U_BOOT_OFFS=0x00100000
     CONFIG_TEXT_BASE=0x00200000
@@ -27,7 +29,10 @@ in
 stdenv.mkDerivation (finalAttrs: {
   name = "uboot-${defconfig}";
 
-  srcs = uboot-src;
+  srcs = [
+    uboot-src
+    dt-src
+  ];
 
   nativeBuildInputs = [
     bison
@@ -51,12 +56,22 @@ stdenv.mkDerivation (finalAttrs: {
     ROCKCHIP_TPL = "${tpl}";
   };
 
-  patchPhase = ''
-    patchShebangs ./scripts
-    patchShebangs ./tools
-
-    sed -i 's/\/bin\/pwd/pwd/' ./Makefile 
+  unpackPhase = ''
+    cp -r -- ${uboot-src} ./source
+    chmod -R a+rwX ./source
+    cd ./source
   '';
+
+  patchPhase =
+    ''
+      patchShebangs ./scripts
+      patchShebangs ./tools
+
+      sed -i 's/\/bin\/pwd/pwd/' ./Makefile
+    ''
+    + lib.strings.optionalString (!builtins.isNull dt-src) ''
+      cp -rv --update=all -- ${dt-src}/* ./dts/upstream
+    '';
 
   configurePhase = ''
     export KBUILD_OUTPUT=build

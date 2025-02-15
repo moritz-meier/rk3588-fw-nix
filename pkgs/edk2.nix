@@ -8,24 +8,26 @@
   python3,
   stdenvNoCC,
   edk2-rk3588-src,
-  linux-src,
 }:
 {
   plat,
-  useUpstreamDts ? true,
+  dt-src ? null,
 }:
-stdenvNoCC.mkDerivation (finalAttrs: rec {
+stdenvNoCC.mkDerivation (finalAttrs: {
   name = "edk2-rk3588";
 
-  src = edk2-rk3588-src;
+  srcs = [
+    edk2-rk3588-src
+    dt-src
+  ];
 
   nativeBuildInputs = [
-    python3
     acpica-tools
-    llvmPackages.libcxxClang
-    pkgsCross.aarch64-multiplatform.stdenv.cc
-    pkgsCross.aarch64-multiplatform.bintools
     dtc
+    llvmPackages.libcxxClang
+    pkgsCross.aarch64-multiplatform.bintools
+    pkgsCross.aarch64-multiplatform.stdenv.cc
+    python3
   ];
 
   buildInputs = [ ];
@@ -37,7 +39,7 @@ stdenvNoCC.mkDerivation (finalAttrs: rec {
   GCC5_AARCH64_PREFIX = pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix;
 
   unpackPhase = ''
-    cp -r -- ${src} ./source
+    cp -r -- ${edk2-rk3588-src} ./source
     chmod -R a+rwX ./source
     cd ./source
   '';
@@ -46,10 +48,8 @@ stdenvNoCC.mkDerivation (finalAttrs: rec {
     ''
       patchShebangs .
     ''
-    + lib.strings.optionalString useUpstreamDts ''
-      rm -rf ./devicetree/mainline/upstream/arm64/*/
-      cp -r -- ${linux-src}/arch/arm64/boot/dts/*/ ./devicetree/mainline/upstream/src/arm64/
-      chmod -R a+rwX ./devicetree/mainline/upstream/src/arm64/
+    + lib.strings.optionalString (!builtins.isNull dt-src) ''
+      cp -rv --update=all -- ${dt-src}/* ./devicetree/mainline/upstream
     '';
 
   configurePhase = ''
