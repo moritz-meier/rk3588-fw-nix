@@ -7,22 +7,22 @@
   tpl,
 }:
 
-stdenv.mkDerivation (finalAttrs: {
+stdenv.mkDerivation (finalAttrs: rec {
   name = "edk2-rk3588-uboot-spl-blob";
 
-  srcs = [ edk2-rk3588-src ];
+  src = edk2-rk3588-src;
 
   nativeBuildInputs = [
     autoPatchelfHook
   ];
 
   unpackPhase = ''
-    cp ${edk2-rk3588-src}/misc/tools/x86_64/mkimage ./
+    cp ${src}/misc/tools/x86_64/mkimage ./
     chmod a+rwx ./mkimage
 
     mkdir ./source
-    cp ${edk2-rk3588-src}/misc/rk3588_spl_v1.12.bin ./source/
-    cp ${edk2-rk3588-src}/misc/rk3588_spl.dtb ./source/
+    cp ${src}/misc/rk3588_spl_v1.12.bin ./source/
+    cp ${src}/misc/rk3588_spl.dtb ./source/
     chmod a+rwX ./source
     cd ./source
   '';

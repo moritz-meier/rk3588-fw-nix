@@ -6,17 +6,18 @@
   rktrust-config ? "RK3588TRUST.ini",
 }:
 
-stdenvNoCC.mkDerivation (finalAttrs: {
+stdenvNoCC.mkDerivation (finalAttrs: rec {
   name = "rkbin-bl31";
 
   src = rkbin-src;
 
+  dontUnpack = true;
   dontPatch = true;
   dontConfigure = true;
   dontBuild = true;
 
   installPhase = ''
-    bl31="./$(grep '^PATH=.*_bl31_' ./RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
+    bl31="./$(grep '^PATH=.*_bl31_' ${src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
 
     mkdir $out
     cp -- $bl31 $out/bl31.elf

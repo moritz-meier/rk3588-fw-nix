@@ -4,7 +4,7 @@
   stdenv,
   edk2-rk3588-src,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation {
   name = "edk2-rk3588-base-tools";
 
   src = edk2-rk3588-src;
@@ -13,12 +13,6 @@ stdenv.mkDerivation rec {
     libuuid
     python3
   ];
-
-  unpackPhase = ''
-    cp -r -- ${src}/ ./source
-    chmod -R a+rwX ./source
-    cd ./source
-  '';
 
   patchPhase = ''
     patchShebangs .

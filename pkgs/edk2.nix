@@ -16,10 +16,7 @@
 stdenvNoCC.mkDerivation (finalAttrs: {
   name = "edk2-rk3588";
 
-  srcs = [
-    edk2-rk3588-src
-    dt-src
-  ];
+  src = edk2-rk3588-src;
 
   nativeBuildInputs = [
     acpica-tools
@@ -37,12 +34,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   ];
 
   GCC5_AARCH64_PREFIX = pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix;
-
-  unpackPhase = ''
-    cp -r -- ${edk2-rk3588-src} ./source
-    chmod -R a+rwX ./source
-    cd ./source
-  '';
 
   patchPhase =
     ''

@@ -29,10 +29,7 @@ in
 stdenv.mkDerivation (finalAttrs: {
   name = "uboot-${defconfig}";
 
-  srcs = [
-    uboot-src
-    dt-src
-  ];
+  srcs = uboot-src;
 
   nativeBuildInputs = [
     bison
@@ -55,12 +52,6 @@ stdenv.mkDerivation (finalAttrs: {
     TEE = "${bl32}";
     ROCKCHIP_TPL = "${tpl}";
   };
-
-  unpackPhase = ''
-    cp -r -- ${uboot-src} ./source
-    chmod -R a+rwX ./source
-    cd ./source
-  '';
 
   patchPhase =
     ''
