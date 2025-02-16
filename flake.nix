@@ -62,7 +62,7 @@
 
         uefi = pkgs.uefi {
           gpt = gpt-blob.bin;
-          idbloader = uboot-spl-blob.idbloader-spi.bin;
+          idbloader = uboot-spl-blob.idbloader.bin;
           fit = uefi-fit.fit;
         };
 

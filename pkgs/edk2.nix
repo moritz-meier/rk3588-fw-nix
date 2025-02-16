@@ -58,6 +58,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     build -a AARCH64 -b RELEASE -t GCC5 -p $PLATFORM -n $NIX_BUILD_CORES \
+      -D NETWORK_ALLOW_HTTP_CONNECTIONS=TRUE \
+      -D NETWORK_ISCSI_ENABLE=TRUE \
+      -D INCLUDE_TFTP_COMMAND=TRUE \
       --pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000 
   '';
 
