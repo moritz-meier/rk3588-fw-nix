@@ -17,7 +17,7 @@ stdenvNoCC.mkDerivation (finalAttrs: rec {
   dontBuild = true;
 
   installPhase = ''
-    bl31="./$(grep '^PATH=.*_bl31_' ${src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
+    bl31="${src}/$(grep '^PATH=.*_bl31_' ${src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
 
     mkdir $out
     cp -- $bl31 $out/bl31.elf

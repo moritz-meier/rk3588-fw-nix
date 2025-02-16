@@ -17,7 +17,7 @@ stdenvNoCC.mkDerivation (finalAttrs: rec {
   dontBuild = true;
 
   installPhase = ''
-    bl32="./$(grep '^PATH=.*_bl32_' ${src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
+    bl32="${src}/$(grep '^PATH=.*_bl32_' ${src}/RKTRUST/${rktrust-config} | cut -d = -f 2 -)"
 
     mkdir $out
     cp -- $bl32 $out/bl32.bin

@@ -49,7 +49,7 @@
 
         edk2 = pkgs.edk2 {
           plat = "OrangePi5Plus";
-          dt-src = pkgs.dt-src;
+          # dt-src = pkgs.dt-src;
         };
 
         uefi-fit = pkgs.uefi-fit {
@@ -62,7 +62,7 @@
 
         uefi = pkgs.uefi {
           gpt = gpt-blob.bin;
-          idbloader = uboot-spl-blob.idbloader.bin;
+          idbloader = uboot-spl-blob.idbloader-spi.bin;
           fit = uefi-fit.fit;
         };
 

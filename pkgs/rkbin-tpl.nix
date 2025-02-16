@@ -17,7 +17,7 @@ stdenvNoCC.mkDerivation (finalAttrs: rec {
   dontBuild = true;
 
   installPhase = ''
-    tpl="./$(grep '^FlashData' ${src}/RKBOOT/${rkboot-config} | cut -d = -f 2 -)"
+    tpl="${src}/$(grep '^FlashData' ${src}/RKBOOT/${rkboot-config} | cut -d = -f 2 -)"
 
     mkdir $out
     cp -- $tpl $out/tpl.bin
