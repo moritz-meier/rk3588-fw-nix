@@ -50,8 +50,8 @@
           };
 
           fit = pkgs.uefi-fit {
-            bl31 = rkbin-bl31.elf;
-            bl32 = rkbin-bl32.bin;
+            bl31 = atf.elf;
+            bl32 = optee.bin;
             bl33 = edk2.fw;
             dtb = uboot-spl-blob.spl.dtb;
             mkimage = uboot-spl-blob;
