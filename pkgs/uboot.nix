@@ -17,11 +17,8 @@
   tpl,
   bl31,
   bl32,
-  dt-src,
-  extraConfig ? ''
-    CONFIG_SYS_SPI_U_BOOT_OFFS=0x00100000
-    CONFIG_TEXT_BASE=0x00200000
-  '',
+  dt-src ? null,
+  extraConfig ? '''',
 }:
 let
   extraConfigFile = writeText ".extra-config" extraConfig;

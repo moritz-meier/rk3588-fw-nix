@@ -1,11 +1,18 @@
-{ runCommand, writeShellScript }:
 {
+  runCommand,
+  writeShellScript,
+  rkdeveloptool,
+}:
+{
+  name,
   loader,
   bin,
 }:
 
 let
-  flash-spi-cmd = writeShellScript "flash-spi-cmd.sh" ''
+  flash-spi-cmd = writeShellScript "flash-spi.sh" ''
+    alias rkdeveloptool="${rkdeveloptool}/bin/rkdeveloptool"
+
     rkdeveloptool db ${loader}
     rkdeveloptool ef
 
@@ -20,5 +27,5 @@ let
 in
 runCommand "flash-spi-cmd" { } ''
   mkdir $out
-  cp ${flash-spi-cmd} $out/flash-spi.sh
+  cp ${flash-spi-cmd} $out/flash-${name}-spi.sh
 ''

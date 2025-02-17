@@ -30,52 +30,64 @@
         rkbin-bl31 = pkgs.rkbin-bl31 { };
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        gpt-blob = pkgs.gpt-blob { };
-
         atf = pkgs.atf { };
         optee = pkgs.optee { };
 
-        uboot-spl-blob = pkgs.uboot-spl-blob {
-          tpl = rkbin-tpl.bin;
+        #######################################
+        # UEFI
+        #######################################
+
+        edk2-uefi = rec {
+          gpt-blob = pkgs.gpt-blob { };
+
+          uboot-spl-blob = pkgs.uboot-spl-blob {
+            tpl = rkbin-tpl.bin;
+          };
+
+          edk2 = pkgs.edk2 {
+            plat = "OrangePi5Plus";
+            # dt-src = pkgs.dt-src;
+          };
+
+          fit = pkgs.uefi-fit {
+            bl31 = rkbin-bl31.elf;
+            bl32 = rkbin-bl32.bin;
+            bl33 = edk2.fw;
+            dtb = uboot-spl-blob.spl.dtb;
+            mkimage = uboot-spl-blob;
+          };
+
+          uefi = pkgs.uefi {
+            gpt = gpt-blob.bin;
+            idbloader = uboot-spl-blob.idbloader.bin;
+            fit = fit.fit;
+          };
+
+          flash-spi-cmd = pkgs.flash-spi-cmd {
+            name = "edk2-uefi";
+            loader = rkbin-loader.bin;
+            bin = uefi.boot.bin;
+          };
         };
 
-        uboot = pkgs.uboot {
-          defconfig = "orangepi-5-plus-rk3588_defconfig";
-          tpl = rkbin-tpl.bin;
-          bl31 = atf.elf;
-          bl32 = optee.elf;
-          dt-src = pkgs.dt-src;
-        };
+        #######################################
+        # U-Boot
+        #######################################
 
-        edk2 = pkgs.edk2 {
-          plat = "OrangePi5Plus";
-          # dt-src = pkgs.dt-src;
-        };
+        uboot = rec {
+          uboot = pkgs.uboot {
+            defconfig = "orangepi-5-plus-rk3588_defconfig";
+            tpl = rkbin-tpl.bin;
+            bl31 = atf.elf;
+            bl32 = optee.elf;
+            dt-src = pkgs.dt-src;
+          };
 
-        uefi-fit = pkgs.uefi-fit {
-          bl31 = rkbin-bl31.elf;
-          bl32 = rkbin-bl32.bin;
-          bl33 = edk2.fw;
-          dtb = uboot-spl-blob.spl.dtb;
-          mkimage = uboot-spl-blob;
-        };
-
-        uefi = pkgs.uefi {
-          gpt = gpt-blob.bin;
-          idbloader = uboot-spl-blob.idbloader.bin;
-          fit = uefi-fit.fit;
-        };
-
-        flash-spi-cmd = pkgs.flash-spi-cmd {
-          loader = rkbin-loader.bin;
-          bin = uefi.boot.bin;
-        };
-
-        default = pkgs.buildEnv {
-          name = "edk2-rk3588";
-
-          paths = [
-          ];
+          flash-spi-cmd = pkgs.flash-spi-cmd {
+            name = "uboot";
+            loader = rkbin-loader.bin;
+            bin = uboot.boot-spi.bin;
+          };
         };
       };
 
@@ -84,22 +96,8 @@
 
           packages = with pkgs; [
             binwalk
-            bison
             dtc
-            flex
-            sd
-            gcc
-            git-subrepo
-            ncurses
-            pkg-config
             rkdeveloptool
-            ubootTools
-            (python3.withPackages (
-              pyPkgs: with pyPkgs; [
-                cryptography
-                pyelftools
-              ]
-            ))
           ];
         };
       };
