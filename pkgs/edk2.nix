@@ -58,7 +58,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     build -a AARCH64 -b RELEASE -t GCC5 -p $PLATFORM -n $NIX_BUILD_CORES \
-      --pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000 
+      --pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000
   '';
 
   installPhase = ''

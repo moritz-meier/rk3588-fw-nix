@@ -46,7 +46,7 @@ final: prev: {
   };
   edk2-rk3588-src = final.fetchgit {
     url = "https://github.com/edk2-porting/edk2-rk3588.git";
-    hash = "sha256-3awEMdFMGYsH18/wjQDkpMoZgWc4sfnm4ttgUof4fl4=";
+    hash = "sha256-IFQMI+rvj1ywlKfIZIRpx+U7C5mjt4SfiRTOOkZ0y60=";
     fetchSubmodules = true;
   };
   rkbin-src = final.fetchFromGitLab {

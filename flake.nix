@@ -98,6 +98,8 @@
             binwalk
             dtc
             rkdeveloptool
+            openssl
+            pkg-config
           ];
         };
       };
