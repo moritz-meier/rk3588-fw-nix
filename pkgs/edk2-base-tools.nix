@@ -19,19 +19,20 @@ stdenv.mkDerivation {
   '';
 
   configurePhase = ''
-    export PACKAGES_PATH=edk2:
-    export EDK_TOOLS_PATH=edk2/BaseTools
-    source edk2/edksetup.sh BaseTools
+    export WORKSPACE="$PWD/workspace"
+    export PACKAGES_PATH="$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-rockchip:$PWD/devicetree:$PWD/edk2-non-osi:$PWD"
+
+    mkdir -p "$WORKSPACE/Conf"
   '';
 
   buildPhase = ''
-    make -C edk2/BaseTools -j $NIX_BUILD_CORES
+    make -C "$PWD/edk2/BaseTools" -j $NIX_BUILD_CORES
   '';
 
   installPhase = ''
     mkdir $out
-    cp -r edk2/BaseTools/* $out/
+    cp -r ./. $out/
   '';
 
-  dontFixup = false;
+  dontFixup = true;
 }

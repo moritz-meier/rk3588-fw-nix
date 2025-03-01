@@ -30,26 +30,22 @@
         rkbin-bl31 = pkgs.rkbin-bl31 { };
         rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        atf = pkgs.atf { };
+        atf = pkgs.atf { plat = "rk3588_reference_pmic"; };
         optee = pkgs.optee { };
 
-        #######################################
-        # UEFI
-        #######################################
-
-        edk2-uefi = rec {
+        edk2-rk3588 = rec {
           gpt-blob = pkgs.gpt-blob { };
 
           uboot-spl-blob = pkgs.uboot-spl-blob {
             tpl = rkbin-tpl.bin;
           };
 
-          edk2 = pkgs.edk2 {
+          edk2 = pkgs.edk2-rk3588 {
             plat = "OrangePi5Plus";
-            # dt-src = pkgs.dt-src;
+            dt-src = pkgs.dt-src;
           };
 
-          fit = pkgs.uefi-fit {
+          fit = pkgs.edk2-rk3588-fit {
             bl31 = atf.elf;
             bl32 = optee.bin;
             bl33 = edk2.fw;
@@ -57,24 +53,20 @@
             mkimage = uboot-spl-blob;
           };
 
-          uefi = pkgs.uefi {
+          img = pkgs.edk2-rk3588-img {
             gpt = gpt-blob.bin;
             idbloader = uboot-spl-blob.idbloader.bin;
             fit = fit.fit;
           };
 
           flash-spi-cmd = pkgs.flash-spi-cmd {
-            name = "edk2-uefi";
+            name = "edk2-rk3588";
             loader = rkbin-loader.bin;
-            bin = uefi.boot.bin;
+            bin = img.bin;
           };
         };
 
-        #######################################
-        # U-Boot
-        #######################################
-
-        uboot = rec {
+        uboot-rk3588 = rec {
           uboot = pkgs.uboot {
             defconfig = "orangepi-5-plus-rk3588_defconfig";
             tpl = rkbin-tpl.bin;
@@ -84,7 +76,7 @@
           };
 
           flash-spi-cmd = pkgs.flash-spi-cmd {
-            name = "uboot";
+            name = "uboot-rk3588";
             loader = rkbin-loader.bin;
             bin = uboot.boot-spi.bin;
           };

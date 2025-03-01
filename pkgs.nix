@@ -13,47 +13,41 @@ final: prev: {
   uboot-spl-blob = final.callPackage ./pkgs/uboot-spl-blob.nix { };
 
   edk2-base-tools = final.callPackage ./pkgs/edk2-base-tools.nix { };
-  edk2 = final.callPackage ./pkgs/edk2.nix { };
+  edk2-rk3588 = final.callPackage ./pkgs/edk2-rk3588.nix { };
 
-  uefi-fit = final.callPackage ./pkgs/uefi-fit.nix { };
-  uefi = final.callPackage ./pkgs/uefi.nix { };
+  edk2-rk3588-fit = final.callPackage ./pkgs/edk2-rk3588-fit.nix { };
+  edk2-rk3588-img = final.callPackage ./pkgs/edk2-rk3588-img.nix { };
 
   flash-spi-cmd = final.callPackage ./pkgs/flash-spi-cmd.nix { };
 
-  atf-src = final.fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "trusted-firmware-a";
-    rev = "rk3588";
-    hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
+  rkbin-src = final.fetchFromGitHub {
+    owner = "rockchip-linux";
+    repo = "rkbin";
+    rev = "0f8ac860f0479da56a1decae207ddc99e289f2e2";
+    hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
   };
-  optee-src = final.fetchFromGitHub {
-    owner = "OP-TEE";
-    repo = "optee_os";
-    rev = "master";
-    hash = "sha256-5dVpYXBvpX50LSoqTHhgkRcfL2yXbqbn7/r4rpVQntA=";
+  atf-src = builtins.fetchGit {
+    url = "git@gitlab.com:moritz-meier/rk3588-trusted-firmware-a";
+    rev = "0e160ebdbea4dd812ffbf2358dc09e8cf7d5675f"; # rk3588
+  };
+  optee-src = builtins.fetchGit {
+    url = "https://review.trustedfirmware.org/OP-TEE/optee_os";
+    rev = "0919de0f7c79ad35ad3c8ace5f823ad1344b4716"; # v4.5.0
+  };
+  dt-src = builtins.fetchGit {
+    url = "https://git.kernel.org/pub/scm/linux/kernel/git/devicetree/devicetree-rebasing";
+    rev = "66f0958dfb02f418625f143d7622b41b01b156e6"; # v6.13-dts
+  };
+  edk2-rk3588-src = builtins.fetchGit {
+    url = "https://github.com/edk2-porting/edk2-rk3588";
+    rev = "dbf783223f83cd0946d05f9d8cbee07bf83cbe68"; # v0.12.2
+    submodules = true;
   };
   uboot-src = final.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
     repo = "u-boot";
-    rev = "rk3588";
+    rev = "7293da4331c19b866883a3fc30cf8308892bf6ec"; # 2025.01-rk3588
     hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
-  };
-  dt-src = final.fetchgit {
-    url = "https://git.kernel.org/pub/scm/linux/kernel/git/devicetree/devicetree-rebasing.git";
-    hash = "sha256-nPCfGsUqzlVe57wEDyamIVitf37xrSZTUJx5pgI0YjQ=";
-  };
-  edk2-rk3588-src = final.fetchgit {
-    url = "https://github.com/edk2-porting/edk2-rk3588.git";
-    hash = "sha256-IFQMI+rvj1ywlKfIZIRpx+U7C5mjt4SfiRTOOkZ0y60=";
-    fetchSubmodules = true;
-  };
-  rkbin-src = final.fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "rkbin";
-    rev = "master";
-    hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
   };
 }
