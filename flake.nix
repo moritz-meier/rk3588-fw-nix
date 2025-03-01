@@ -40,6 +40,8 @@
             tpl = rkbin-tpl.bin;
           };
 
+          edk2-base-tools = pkgs.edk2-base-tools;
+
           edk2 = pkgs.edk2-rk3588 {
             plat = "OrangePi5Plus";
             dt-src = pkgs.dt-src;

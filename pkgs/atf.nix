@@ -31,13 +31,12 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   installPhase = ''
     mkdir $out
-
-    cp -- ./build/${plat}/release/bl31/bl31.elf $out/bl31.elf
+    cp -r ./build/. $out/
   '';
 
   dontFixup = true;
 
   passthru = {
-    elf = "${finalAttrs.finalPackage.out}/bl31.elf";
+    elf = "${finalAttrs.finalPackage.out}/${plat}/release/bl31/bl31.elf";
   };
 })

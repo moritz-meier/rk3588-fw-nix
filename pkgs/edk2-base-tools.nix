@@ -19,10 +19,7 @@ stdenv.mkDerivation {
   '';
 
   configurePhase = ''
-    export WORKSPACE="$PWD/workspace"
     export PACKAGES_PATH="$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-rockchip:$PWD/devicetree:$PWD/edk2-non-osi:$PWD"
-
-    mkdir -p "$WORKSPACE/Conf"
   '';
 
   buildPhase = ''
@@ -31,7 +28,7 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir $out
-    cp -r ./. $out/
+    cp -r ./edk2/BaseTools/. $out/
   '';
 
   dontFixup = true;

@@ -44,14 +44,13 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   installPhase = ''
     mkdir $out
-    cp ./out/arm-plat-rockchip/core/tee.elf $out/
-    cp ./out/arm-plat-rockchip/core/tee.bin $out/
+    cp -r ./out/. $out/
   '';
 
   dontFixup = true;
 
   passthru = {
-    elf = "${finalAttrs.finalPackage.out}/tee.elf";
-    bin = "${finalAttrs.finalPackage.out}/tee.bin";
+    elf = "${finalAttrs.finalPackage.out}/arm-plat-rockchip/core/tee.elf";
+    bin = "${finalAttrs.finalPackage.out}/arm-plat-rockchip/core/tee.bin";
   };
 })

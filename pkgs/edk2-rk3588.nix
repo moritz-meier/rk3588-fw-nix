@@ -7,7 +7,7 @@
   pkgsCross,
   python3,
   stdenvNoCC,
-# edk2-rk3588-src,
+  edk2-rk3588-src,
 }:
 {
   plat,
@@ -17,7 +17,7 @@
 stdenvNoCC.mkDerivation (finalAttrs: {
   name = "edk2-rk3588";
 
-  src = edk2-base-tools;
+  src = edk2-rk3588-src;
 
   nativeBuildInputs = [
     acpica-tools
@@ -46,11 +46,14 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   configurePhase = ''
     export WORKSPACE="$PWD/workspace"
+    export EDK_TOOLS_PATH=${edk2-base-tools}
     export PACKAGES_PATH="$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-rockchip:$PWD/devicetree:$PWD/edk2-non-osi:$PWD"
 
     config=$(grep -rl 'PLATFORM_NAME=${plat}' ./configs/)
     dsc=$(grep '^DSC_FILE=' $config | cut -d = -f 2 -)
     export PLATFORM="$PWD/$dsc"
+
+    mkdir -p $WORKSPACE/Conf
 
     source "$PWD/edk2/edksetup.sh" BaseTools
   '';
@@ -59,11 +62,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     build -a AARCH64 -b RELEASE -t GCC -p $PLATFORM -n $NIX_BUILD_CORES \
       -D FIRMWARE_VER="unknown" \
       -D DEFAULT_KEYS=TRUE \
-      -D PK_DEFAULT_FILE=${../keys}/pk.cer \
-      -D KEK_DEFAULT_FILE1=${../keys}/ms_kek.cer \
-      -D DB_DEFAULT_FILE1=${../keys}/ms_db1.cer \
-      -D DB_DEFAULT_FILE2=${../keys}/ms_db2.cer \
-      -D DBX_DEFAULT_FILE1=${../keys}/arm64_dbx.bin \
+      -D PK_DEFAULT_FILE=${../keys/pk.cer} \
+      -D KEK_DEFAULT_FILE1=${../keys/ms_kek.cer} \
+      -D DB_DEFAULT_FILE1=${../keys/ms_db1.cer} \
+      -D DB_DEFAULT_FILE2=${../keys/ms_db2.cer} \
+      -D DBX_DEFAULT_FILE1=${../keys/arm64_dbx.bin} \
       -D SECURE_BOOT_ENABLE=TRUE \
       -D NETWORK_ALLOW_HTTP_CONNECTIONS=TRUE \
       -D NETWORK_ISCSI_ENABLE=TRUE \

@@ -75,16 +75,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     mkdir $out
-
-    cp ./build/spl/u-boot-spl $out/
-    cp ./build/spl/u-boot-spl-dtb.bin $out/
-    cp ./build/spl/u-boot-spl.dtb $out/
-
-    cp ./build/idbloader.img $out/
-    cp ./build/idbloader-spi.img $out/
-
-    cp ./build/u-boot-rockchip.bin $out/
-    cp ./build/u-boot-rockchip-spi.bin $out/
+    cp -r ./build/. $out/
 
     mkdir $out/bin
     cp ./build/tools/mkimage $out/bin/
@@ -93,9 +84,9 @@ stdenv.mkDerivation (finalAttrs: {
   dontFixup = true;
 
   passthru = {
-    spl.elf = "${finalAttrs.finalPackage.out}/u-boot-spl";
-    spl.bin = "${finalAttrs.finalPackage.out}/u-boot-spl-dtb.bin";
-    spl.dtb = "${finalAttrs.finalPackage.out}/u-boot-spl.dtb";
+    spl.elf = "${finalAttrs.finalPackage.out}/spl/u-boot-spl";
+    spl.bin = "${finalAttrs.finalPackage.out}/spl/u-boot-spl-dtb.bin";
+    spl.dtb = "${finalAttrs.finalPackage.out}/spl/u-boot-spl.dtb";
 
     idbloader.bin = "${finalAttrs.finalPackage.out}/idbloader.img";
     idbloader-spi.bin = "${finalAttrs.finalPackage.out}/idbloader-spi.img";
