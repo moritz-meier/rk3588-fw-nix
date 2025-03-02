@@ -24,7 +24,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     ${
       (lib.strings.optionalString (!builtins.isNull gpt) ''
-        dd if=${gpt} of=boot.bin bs=1K seek=0
+        dd if=${gpt} of=edk2-rk3588.bin bs=1K seek=0
       '')
     }
 

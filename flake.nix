@@ -44,7 +44,7 @@
 
           edk2 = pkgs.edk2-rk3588 {
             plat = "OrangePi5Plus";
-            dt-src = pkgs.dt-src;
+            # dt-src = pkgs.dt-src;
           };
 
           fit = pkgs.edk2-rk3588-fit {

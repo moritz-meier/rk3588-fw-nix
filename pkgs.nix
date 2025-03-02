@@ -26,23 +26,30 @@ final: prev: {
     rev = "0f8ac860f0479da56a1decae207ddc99e289f2e2";
     hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
   };
-  atf-src = builtins.fetchGit {
-    url = "git@gitlab.com:moritz-meier/rk3588-trusted-firmware-a";
-    rev = "0e160ebdbea4dd812ffbf2358dc09e8cf7d5675f"; # rk3588
+
+  atf-src = final.fetchFromGitHub {
+    owner = "worproject";
+    repo = "arm-trusted-firmware";
+    rev = "rk3588";
+    hash = "sha256-jK5X1O/W7/5iVwzxgelZhCp1Rs4GpnyPRtTEBeQYDdo=";
   };
+
   optee-src = builtins.fetchGit {
     url = "https://review.trustedfirmware.org/OP-TEE/optee_os";
     rev = "0919de0f7c79ad35ad3c8ace5f823ad1344b4716"; # v4.5.0
   };
+
   dt-src = builtins.fetchGit {
     url = "https://git.kernel.org/pub/scm/linux/kernel/git/devicetree/devicetree-rebasing";
-    rev = "66f0958dfb02f418625f143d7622b41b01b156e6"; # v6.13-dts
+    rev = "0b2c040bb511465806c387e9ede134caedd028c5"; # v6.14-rc4-dts
   };
+
   edk2-rk3588-src = builtins.fetchGit {
     url = "https://github.com/edk2-porting/edk2-rk3588";
     rev = "dbf783223f83cd0946d05f9d8cbee07bf83cbe68"; # v0.12.2
     submodules = true;
   };
+
   uboot-src = final.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
