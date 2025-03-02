@@ -60,7 +60,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     build -a AARCH64 -b RELEASE -t GCC -p $PLATFORM -n $NIX_BUILD_CORES \
-      -D FIRMWARE_VER="unknown" \
+      -D FIRMWARE_VER="${edk2-rk3588-src.rev}" \
       -D DEFAULT_KEYS=TRUE \
       -D PK_DEFAULT_FILE=${../keys/pk.cer} \
       -D KEK_DEFAULT_FILE1=${../keys/ms_kek.cer} \

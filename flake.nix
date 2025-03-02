@@ -30,6 +30,8 @@
         # rkbin-bl31 = pkgs.rkbin-bl31 { };
         # rkbin-bl32 = pkgs.rkbin-bl32 { };
 
+        foo = pkgs.edk2-rk3588-src;
+
         edk2-rk3588 = rec {
           gpt-blob = pkgs.gpt-blob { };
 
