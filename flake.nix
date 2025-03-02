@@ -27,11 +27,8 @@
       packages.${system} = rec {
         rkbin-loader = pkgs.rkbin-loader { };
         rkbin-tpl = pkgs.rkbin-tpl { };
-        rkbin-bl31 = pkgs.rkbin-bl31 { };
-        rkbin-bl32 = pkgs.rkbin-bl32 { };
-
-        atf = pkgs.atf { plat = "rk3588_reference_pmic"; };
-        optee = pkgs.optee { };
+        # rkbin-bl31 = pkgs.rkbin-bl31 { };
+        # rkbin-bl32 = pkgs.rkbin-bl32 { };
 
         edk2-rk3588 = rec {
           gpt-blob = pkgs.gpt-blob { };
@@ -39,6 +36,11 @@
           uboot-spl-blob = pkgs.uboot-spl-blob {
             tpl = rkbin-tpl.bin;
           };
+
+          tfa = (pkgs.trusted-firmware-a.override { tfa-src = pkgs.edk2-rk3588-tfa-src; }) {
+            plat = "rk3588_reference_pmic";
+          };
+          optee = pkgs.optee-os { };
 
           edk2-base-tools = pkgs.edk2-base-tools;
 
@@ -48,7 +50,7 @@
           };
 
           fit = pkgs.edk2-rk3588-fit {
-            bl31 = atf.elf;
+            bl31 = tfa.elf;
             bl32 = optee.bin;
             bl33 = edk2.fw;
             dtb = uboot-spl-blob.spl.dtb;
@@ -69,10 +71,13 @@
         };
 
         uboot-rk3588 = rec {
+          tfa = pkgs.trusted-firmware-a { };
+          optee = pkgs.optee-os { };
+
           uboot = pkgs.uboot {
             defconfig = "orangepi-5-plus-rk3588_defconfig";
             tpl = rkbin-tpl.bin;
-            bl31 = atf.elf;
+            bl31 = tfa.elf;
             bl32 = optee.elf;
             dt-src = pkgs.dt-src;
           };

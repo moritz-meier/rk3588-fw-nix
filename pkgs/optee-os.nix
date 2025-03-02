@@ -8,7 +8,7 @@
   plat ? "rockchip-rk3588",
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "optee-${plat}";
+  name = "optee-os-${plat}";
 
   src = optee-src;
 

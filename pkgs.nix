@@ -6,8 +6,8 @@ final: prev: {
 
   gpt-blob = final.callPackage ./pkgs/gpt-blob.nix { };
 
-  atf = final.callPackage ./pkgs/atf.nix { };
-  optee = final.callPackage ./pkgs/optee.nix { };
+  trusted-firmware-a = final.callPackage ./pkgs/trusted-firmware-a.nix { };
+  optee-os = final.callPackage ./pkgs/optee-os.nix { };
 
   uboot = final.callPackage ./pkgs/uboot.nix { };
   uboot-spl-blob = final.callPackage ./pkgs/uboot-spl-blob.nix { };
@@ -27,11 +27,19 @@ final: prev: {
     hash = "sha256-KBmO++Z1AfIKvAmx7CzXScww16Stvq2BWr2raPiR6Q8=";
   };
 
-  atf-src = final.fetchFromGitHub {
+  edk2-rk3588-tfa-src = final.fetchFromGitHub {
     owner = "worproject";
     repo = "arm-trusted-firmware";
     rev = "rk3588";
     hash = "sha256-jK5X1O/W7/5iVwzxgelZhCp1Rs4GpnyPRtTEBeQYDdo=";
+  };
+
+  tfa-src = final.fetchFromGitLab {
+    domain = "gitlab.collabora.com";
+    owner = "hardware-enablement/rockchip-3588";
+    repo = "trusted-firmware-a";
+    rev = "4ec2948fe3f65dba2f19e691e702f7de2949179c";
+    hash = "sha256-PCUKLfmvIBiJqVmKSUKkNig1h44+4RypZ04BvJ+HP6M=";
   };
 
   optee-src = builtins.fetchGit {

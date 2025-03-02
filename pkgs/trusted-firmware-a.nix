@@ -2,16 +2,16 @@
   lib,
   pkgsCross,
   stdenvNoCC,
-  atf-src,
+  tfa-src,
 }:
 {
   plat ? "rk3588",
   logging ? false,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "arm-trusted-firmware-${plat}";
+  name = "trusted-firmware-a-${plat}";
 
-  src = atf-src;
+  src = tfa-src;
 
   nativeBuildInputs = [
     pkgsCross.aarch64-embedded.stdenv.cc.cc
