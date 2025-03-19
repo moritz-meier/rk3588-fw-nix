@@ -81,7 +81,20 @@
             tpl = rkbin-tpl.bin;
             bl31 = tfa.elf;
             bl32 = optee.elf;
-            dt-src = pkgs.dt-src;
+            dt-src = builtins.fetchGit {
+              url = "file:///var/home/moritz/Repositories/moritz/devicetree-rebasing";
+              # rev = "2c2520cf06bd405e84ba5ec325e11e990a8346d2";
+            };
+
+            extraConfig = ''
+              CONFIG_BOOTP_PXE_DHCP_OPTION=y
+              CONFIG_SERVERIP_FROM_PROXYDHCP=y
+              CONFIG_SERVERIP_FROM_PROXYDHCP_DELAY_MS=100
+
+              CONFIG_ENV_IS_NOWHERE=n
+              CONFIG_ENV_IS_IN_SPI_FLASH=y
+              CONFIG_ENV_OFFSET=0x800000
+            '';
           };
 
           flash-spi-cmd = pkgs.flash-spi-cmd {
