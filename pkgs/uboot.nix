@@ -1,97 +1,118 @@
 {
   bison,
+  buildPackages,
+  dtc,
   flex,
   gnutls,
   lib,
+  libuuid,
   openssl,
+  perl,
   pkg-config,
-  pkgsCross,
-  python3,
   stdenv,
   swig,
+  which,
   writeText,
+
   uboot-src,
 }:
+
 {
   defconfig,
-  tpl,
-  bl31,
-  bl32,
-  dt-src ? null,
-  extraConfig ? '''',
+  deviceTree ? null,
+  extDeviceTreeBlob ? null,
+  extraConfig ? "",
+  extraMakeFlags ? [ ],
+  extraPatches ? [ ],
+  src ? uboot-src,
+  outputFiles ? { },
 }:
 let
-  extraConfigFile = writeText ".extra-config" extraConfig;
+  extraConfigPath = writeText ".extra-config" extraConfig;
 in
-stdenv.mkDerivation (finalAttrs: {
+stdenv.mkDerivation (finalAttrs: rec {
   name = "uboot-${defconfig}";
+  version = src.rev;
 
-  srcs = uboot-src;
+  inherit src;
 
   nativeBuildInputs = [
     bison
+    dtc
     flex
-    pkgsCross.aarch64-multiplatform.stdenv.cc
-    (python3.withPackages (
+    gnutls
+    libuuid
+    openssl
+    perl
+    pkg-config
+    swig
+    which
+    # https://github.com/NixOS/nixpkgs/issues/305858
+    (buildPackages.python3.withPackages (
       pyPkgs: with pyPkgs; [
         setuptools
         pyelftools
       ]
     ))
-    swig
-    openssl
-    gnutls
-    pkg-config
   ];
 
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
+
   env = {
-    BL31 = "${bl31}";
-    TEE = "${bl32}";
-    ROCKCHIP_TPL = "${tpl}";
+    KBUILD_OUTPUT = "build";
   };
 
-  patchPhase =
-    ''
-      patchShebangs ./scripts
-      patchShebangs ./tools
+  makeFlags = [
+    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+  ]
+  ++ lib.lists.optional (deviceTree != null) "DEVICE_TREE=${deviceTree}"
+  ++ lib.lists.optional (extDeviceTreeBlob != null) "EXT_DTB=${extDeviceTreeBlob}"
+  ++ extraMakeFlags;
 
-      sed -i 's/\/bin\/pwd/pwd/' ./Makefile
-    ''
-    + lib.strings.optionalString (!builtins.isNull dt-src) ''
-      cp -rv --update=all -- ${dt-src}/* ./dts/upstream
-    '';
+  patches = [ ] ++ extraPatches;
+
+  postPatch = ''
+    patchShebangs ./scripts
+    patchShebangs ./tools
+
+    sed -i 's/\/bin\/pwd/pwd/' ./Makefile
+  '';
 
   configurePhase = ''
-    export KBUILD_OUTPUT=build
-    export CROSS_COMPILE=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix}
-    make ${defconfig}
+    runHook preConfigure
 
-    cat ${extraConfigFile} >> $KBUILD_OUTPUT/.config
+    make ${defconfig}
+    cat ${extraConfigPath} >> $KBUILD_OUTPUT/.config
+
+    runHook postConfigure
   '';
 
   buildPhase = ''
-    make -j $NIX_BUILD_CORES
+    runHook preBuild
+
+    make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES
+
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
+
     mkdir $out
-    cp -r ./build/. $out/
+    cp -r ./$KBUILD_OUTPUT/. $out/
 
     mkdir $out/bin
-    cp ./build/tools/mkimage $out/bin/
+    cp ./$KBUILD_OUTPUT/tools/mkimage $out/bin/
+
+    runHook postInstall
   '';
 
   dontFixup = true;
 
   passthru = {
-    spl.elf = "${finalAttrs.finalPackage.out}/spl/u-boot-spl";
-    spl.bin = "${finalAttrs.finalPackage.out}/spl/u-boot-spl-dtb.bin";
-    spl.dtb = "${finalAttrs.finalPackage.out}/spl/u-boot-spl.dtb";
-
-    idbloader.bin = "${finalAttrs.finalPackage.out}/idbloader.img";
-    idbloader-spi.bin = "${finalAttrs.finalPackage.out}/idbloader-spi.img";
-
-    boot.bin = "${finalAttrs.finalPackage.out}/u-boot-rockchip.bin";
-    boot-spi.bin = "${finalAttrs.finalPackage.out}/u-boot-rockchip-spi.bin";
-  };
+    elf = "${finalAttrs.finalPackage.out}/u-boot";
+    dtb = "${finalAttrs.finalPackage.out}/u-boot.dtb";
+    config = "${finalAttrs.finalPackage.out}/.config";
+  }
+  // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

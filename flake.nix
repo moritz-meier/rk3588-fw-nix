@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=release-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -27,93 +27,81 @@
       packages.${system} = rec {
         rkbin-loader = pkgs.rkbin-loader { };
         rkbin-tpl = pkgs.rkbin-tpl { };
-        # rkbin-bl31 = pkgs.rkbin-bl31 { };
-        # rkbin-bl32 = pkgs.rkbin-bl32 { };
+        rkbin-bl31 = pkgs.rkbin-bl31 { };
+        rkbin-bl32 = pkgs.rkbin-bl32 { };
 
-        foo = pkgs.edk2-rk3588-src;
+        tfa = pkgs.pkgsCross.aarch64-multiplatform.trusted-firmware-a {
+          plat = "rk3588";
+        };
 
-        edk2-rk3588 = rec {
-          gpt-blob = pkgs.gpt-blob { };
+        optee = pkgs.pkgsCross.aarch64-multiplatform.optee-os {
+          plat = "rockchip-rk3588";
+        };
 
-          uboot-spl-blob = pkgs.uboot-spl-blob {
-            tpl = rkbin-tpl.bin;
-          };
+        uboot = pkgs.pkgsCross.aarch64-multiplatform.uboot {
+          defconfig = "orangepi-5-plus-rk3588_defconfig";
+          extraMakeFlags = [
+            "ROCKCHIP_TPL=${rkbin-tpl.bin}"
+            "BL31=${tfa.elf}"
+            "TEE=${optee.elf}"
+          ];
 
-          tfa = (pkgs.trusted-firmware-a.override { tfa-src = pkgs.edk2-rk3588-tfa-src; }) {
-            plat = "rk3588_reference_pmic";
-          };
-          optee = pkgs.optee-os { };
-
-          edk2-base-tools = pkgs.edk2-base-tools;
-
-          edk2 = pkgs.edk2-rk3588 {
-            plat = "OrangePi5Plus";
-            # dt-src = pkgs.dt-src;
-          };
-
-          fit = pkgs.edk2-rk3588-fit {
-            bl31 = tfa.elf;
-            bl32 = optee.bin;
-            bl33 = edk2.fw;
-            dtb = uboot-spl-blob.spl.dtb;
-            mkimage = uboot-spl-blob;
-          };
-
-          img = pkgs.edk2-rk3588-img {
-            gpt = gpt-blob.bin;
-            idbloader = uboot-spl-blob.idbloader.bin;
-            fit = fit.fit;
-          };
-
-          flash-spi-cmd = pkgs.flash-spi-cmd {
-            name = "edk2-rk3588";
-            loader = rkbin-loader.bin;
-            bin = img.bin;
+          outputFiles = {
+            idbloader = "idbloader.img";
+            idbloader-spi = "idbloader-spi.img";
           };
         };
 
-        uboot-rk3588 = rec {
-          tfa = pkgs.trusted-firmware-a { };
-          optee = pkgs.optee-os { };
+        uboot-tools = pkgs.pkgsCross.aarch64-multiplatform.uboot-tools;
 
-          uboot = pkgs.uboot {
-            defconfig = "orangepi-5-plus-rk3588_defconfig";
-            tpl = rkbin-tpl.bin;
-            bl31 = tfa.elf;
-            bl32 = optee.elf;
-            dt-src = builtins.fetchGit {
-              url = "file:///var/home/moritz/Repositories/moritz/devicetree-rebasing";
-              # rev = "2c2520cf06bd405e84ba5ec325e11e990a8346d2";
+        edk2-rk3588 =
+          let
+            edk2-rk3588-src-patched = pkgs.applyPatches {
+              name = "edk2-rk3588-src-patched";
+              src = pkgs.edk2-rk3588-src;
+
+              postPatch = ''
+                for patch_file in "./edk2-patches/*.patch"; do
+                  patch -p1 -d ./edk2 < $patch_file
+                done
+              '';
             };
+          in
+          pkgs.pkgsCross.aarch64-multiplatform.edk2 {
+            dsc = "edk2-rockchip/Platform/OrangePi/OrangePi5Plus/OrangePi5Plus.dsc";
+            buildConfig = "RELEASE";
+            src = edk2-rk3588-src-patched;
+            packagesPath = [
+              "devicetree"
+              "edk2"
+              "edk2-non-osi"
+              "edk2-platforms"
+              "edk2-rockchip"
+              "edk2-rockchip-non-osi"
+            ];
 
-            extraConfig = ''
-              CONFIG_BOOTP_PXE_DHCP_OPTION=y
-              CONFIG_SERVERIP_FROM_PROXYDHCP=y
-              CONFIG_SERVERIP_FROM_PROXYDHCP_DELAY_MS=100
-
-              CONFIG_ENV_IS_NOWHERE=n
-              CONFIG_ENV_IS_IN_SPI_FLASH=y
-              CONFIG_ENV_OFFSET=0x800000
-            '';
+            extraBuildFlags = [
+              "-D FIRMWARE_VER=${edk2-rk3588-src-patched.rev}"
+              "-D DEFAULT_KEYS=TRUE"
+              "-D PK_DEFAULT_FILE=${./keys/pk.cer}"
+              "-D KEK_DEFAULT_FILE1=${./keys/ms_kek.cer}"
+              "-D DB_DEFAULT_FILE1=${./keys/ms_db1.cer}"
+              "-D DB_DEFAULT_FILE2=${./keys/ms_db2.cer}"
+              "-D DBX_DEFAULT_FILE1=${./keys/arm64_dbx.bin}"
+              "-D SECURE_BOOT_ENABLE=TRUE"
+              "-D NETWORK_ALLOW_HTTP_CONNECTIONS=TRUE"
+              "-D NETWORK_ISCSI_ENABLE=TRUE"
+              "-D INCLUDE_TFTP_COMMAND=TRUE"
+              "--pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000"
+            ];
           };
-
-          flash-spi-cmd = pkgs.flash-spi-cmd {
-            name = "uboot-rk3588";
-            loader = rkbin-loader.bin;
-            bin = uboot.boot-spi.bin;
-          };
-        };
       };
 
       devShells.${system} = {
         default = pkgs.mkShell {
-
-          packages = with pkgs; [
-            binwalk
-            dtc
-            rkdeveloptool
-            openssl
-            pkg-config
+          packages = [
+            pkgs.qemu_full
+            pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc
           ];
         };
       };

@@ -1,56 +1,91 @@
 {
-  pkgsCross,
+  buildPackages,
+  dtc,
+  lib,
   python3,
-  stdenvNoCC,
+  stdenv,
+
   optee-src,
 }:
 {
-  plat ? "rockchip-rk3588",
+  plat,
+  extraMakeFlags ? [ ],
+  extraPatches ? [ ],
+  src ? optee-src,
+  outputFiles ? { }
 }:
-stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "optee-os-${plat}";
 
-  src = optee-src;
+stdenv.mkDerivation (finalAttrs: rec {
+  name = "optee-os-${plat}";
+  version = src.rev;
+
+  inherit src;
 
   nativeBuildInputs = [
-    pkgsCross.aarch64-multiplatform.stdenv.cc.cc
-    pkgsCross.aarch64-multiplatform.stdenv.cc.bintools
-    pkgsCross.armv7l-hf-multiplatform.stdenv.cc.cc
-    pkgsCross.armv7l-hf-multiplatform.stdenv.cc.bintools
-    (python3.withPackages (
-      pyPkgs: with pyPkgs; [
-        cryptography
+    dtc
+    # https://github.com/NixOS/nixpkgs/issues/305858
+    (buildPackages.python3.withPackages (
+      p: with p; [
         pyelftools
+        cryptography
       ]
     ))
   ];
 
-  patchPhase = ''
-    patchShebangs .
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
+
+  makeFlags =
+    let
+      targetArch = {
+        "arm" = "ta_arm32";
+        "arm64" = "ta_arm64";
+      }.${stdenv.hostPlatform.linuxArch};
+
+      inherit (stdenv.hostPlatform) is32bit is64bit;
+    in
+  [
+    "O=build"
+    "PLATFORM=${plat}"
+    "CFG_USER_TA_TARGETS=${targetArch}"
+  ]
+  ++ (lib.optionals is32bit [
+    "CFG_ARM32_core=y"
+    "CROSS_COMPILE32=${stdenv.cc.targetPrefix}"
+  ])
+  ++ (lib.optionals is64bit [
+    "CFG_ARM64_core=y"
+    "CROSS_COMPILE64=${stdenv.cc.targetPrefix}"
+  ])
+  ++ extraMakeFlags;
+
+  patches = [ ] ++ extraPatches;
+
+  postPatch = ''
+    patchShebangs $(find -type d -name scripts -printf '%p ')
   '';
 
   dontConfigure = true;
 
   buildPhase = ''
-    make -j $NIX_BUILD_CORES \
-      CFG_ARM64_core=y \
-      CFG_TEE_BENCHMARK=n \
-      CROSS_COMPILE=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix} \
-      CROSS_COMPILE_core=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix} \
-      CROSS_COMPILE_ta_arm32=${pkgsCross.armv7l-hf-multiplatform.stdenv.cc.targetPrefix} \
-      CROSS_COMPILE_ta_arm64=${pkgsCross.aarch64-multiplatform.stdenv.cc.targetPrefix} \
-      PLATFORM=${plat}
+    runHook preBuild
+
+    make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES
+
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
+
     mkdir $out
-    cp -r ./out/. $out/
+    cp -r ./build/. $out/
+
+    runHook postInstall
   '';
 
   dontFixup = true;
 
   passthru = {
-    elf = "${finalAttrs.finalPackage.out}/arm-plat-rockchip/core/tee.elf";
-    bin = "${finalAttrs.finalPackage.out}/arm-plat-rockchip/core/tee.bin";
-  };
+    elf = "${finalAttrs.finalPackage.out}/core/tee.elf";
+  } // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

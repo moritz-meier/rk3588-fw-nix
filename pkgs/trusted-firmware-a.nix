@@ -1,42 +1,68 @@
 {
+  buildPackages,
+  dtc,
   lib,
-  pkgsCross,
-  stdenvNoCC,
+  stdenv,
+
   tfa-src,
 }:
 {
-  plat ? "rk3588",
-  logging ? false,
+  plat,
+  extraMakeFlags ? [ ],
+  extraPatches ? [ ],
+  src ? tfa-src,
+  outputFiles ? { }
 }:
-stdenvNoCC.mkDerivation (finalAttrs: {
-  name = "trusted-firmware-a-${plat}";
 
-  src = tfa-src;
+stdenv.mkDerivation (finalAttrs: rec {
+  name = "trusted-firmware-a-${plat}";
+  version = src.rev;
+
+  inherit src;
 
   nativeBuildInputs = [
-    pkgsCross.aarch64-embedded.stdenv.cc.cc
-    pkgsCross.aarch64-multiplatform.bintools.bintools
+    dtc
   ];
 
-  dontPatch = true;
+  depsBuildBuild = [ buildPackages.stdenv.cc ];
+
+  makeFlags = [
+    "HOSTCC=$(CC_FOR_BUILD)"
+    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
+    "CC=${stdenv.cc.targetPrefix}cc"
+    "LD=${stdenv.cc.targetPrefix}cc"
+    "AS=${stdenv.cc.targetPrefix}cc"
+    "OC=${stdenv.cc.targetPrefix}objcopy"
+    "OD=${stdenv.cc.targetPrefix}objdump"
+
+    "PLAT=${plat}"
+  ]
+  ++ extraMakeFlags;
+
+  patches = [ ] ++ extraPatches;
+
   dontConfigure = true;
 
   buildPhase = ''
-    make -j $NIX_BUILD_CORES \
-      CROSS_COMILE=${pkgsCross.aarch64-embedded.stdenv.cc.targetPrefix} \
-      PLAT=${plat} \
-      ${lib.strings.optionalString logging "LOG_LEVEL=50"} \
-      bl31
+    runHook preBuild
+
+    make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES bl31
+
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
+
     mkdir $out
     cp -r ./build/. $out/
+
+    runHook postInstall
   '';
 
   dontFixup = true;
 
   passthru = {
     elf = "${finalAttrs.finalPackage.out}/${plat}/release/bl31/bl31.elf";
-  };
+  } // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

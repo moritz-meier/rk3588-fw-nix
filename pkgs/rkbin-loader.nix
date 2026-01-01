@@ -3,23 +3,24 @@
   rkbin-src,
 }:
 {
-  rkboot-config ? "RK3588MINIALL.ini",
+  rkBootConfig ? "RK3588MINIALL.ini",
+  src ? rkbin-src,
 }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   name = "rkbin-loader";
 
-  src = rkbin-src;
+  inherit src;
 
   dontPatch = true;
   dontConfigure = true;
 
   buildPhase = ''
-    ./tools/boot_merger RKBOOT/${rkboot-config}
+    ./tools/boot_merger RKBOOT/${rkBootConfig}
   '';
 
   installPhase = ''
-    loader="./$(grep '^PATH=.*_loader_.*\.bin' ./RKBOOT/${rkboot-config} | cut -d = -f 2 -)"
+    loader="./$(grep '^PATH=.*_loader_.*\.bin' ./RKBOOT/${rkBootConfig} | cut -d = -f 2 -)"
 
     mkdir $out
     cp -- $loader $out/spl-loader.bin
