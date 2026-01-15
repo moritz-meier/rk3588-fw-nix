@@ -1,4 +1,5 @@
 {
+  bear,
   bison,
   buildPackages,
   dtc,
@@ -32,11 +33,12 @@ let
 in
 stdenv.mkDerivation (finalAttrs: rec {
   name = "uboot-${defconfig}";
-  version = src.rev;
+  # version = finalAttrs.src.rev;
 
   inherit src;
 
   nativeBuildInputs = [
+    bear
     bison
     dtc
     flex
@@ -90,7 +92,7 @@ stdenv.mkDerivation (finalAttrs: rec {
   buildPhase = ''
     runHook preBuild
 
-    make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES
+    bear -- make ${(lib.strings.escapeShellArgs makeFlags)} -j $NIX_BUILD_CORES
 
     runHook postBuild
   '';
@@ -100,19 +102,13 @@ stdenv.mkDerivation (finalAttrs: rec {
 
     mkdir $out
     cp -r ./$KBUILD_OUTPUT/. $out/
-
-    mkdir $out/bin
-    cp ./$KBUILD_OUTPUT/tools/mkimage $out/bin/
+    cp ./compile_commands.json $out/
 
     runHook postInstall
   '';
 
   dontFixup = true;
 
-  passthru = {
-    elf = "${finalAttrs.finalPackage.out}/u-boot";
-    dtb = "${finalAttrs.finalPackage.out}/u-boot.dtb";
-    config = "${finalAttrs.finalPackage.out}/.config";
-  }
-  // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
+  passthru =
+    { } // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

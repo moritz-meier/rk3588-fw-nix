@@ -2,7 +2,6 @@
   buildPackages,
   dtc,
   lib,
-  python3,
   stdenv,
 
   optee-src,
@@ -12,7 +11,7 @@
   extraMakeFlags ? [ ],
   extraPatches ? [ ],
   src ? optee-src,
-  outputFiles ? { }
+  outputFiles ? { },
 }:
 
 stdenv.mkDerivation (finalAttrs: rec {
@@ -36,27 +35,29 @@ stdenv.mkDerivation (finalAttrs: rec {
 
   makeFlags =
     let
-      targetArch = {
-        "arm" = "ta_arm32";
-        "arm64" = "ta_arm64";
-      }.${stdenv.hostPlatform.linuxArch};
+      targetArch =
+        {
+          "arm" = "ta_arm32";
+          "arm64" = "ta_arm64";
+        }
+        .${stdenv.hostPlatform.linuxArch};
 
       inherit (stdenv.hostPlatform) is32bit is64bit;
     in
-  [
-    "O=build"
-    "PLATFORM=${plat}"
-    "CFG_USER_TA_TARGETS=${targetArch}"
-  ]
-  ++ (lib.optionals is32bit [
-    "CFG_ARM32_core=y"
-    "CROSS_COMPILE32=${stdenv.cc.targetPrefix}"
-  ])
-  ++ (lib.optionals is64bit [
-    "CFG_ARM64_core=y"
-    "CROSS_COMPILE64=${stdenv.cc.targetPrefix}"
-  ])
-  ++ extraMakeFlags;
+    [
+      "PLATFORM=${plat}"
+      "CFG_USER_TA_TARGETS=${targetArch}"
+      "O=./build"
+    ]
+    ++ (lib.optionals is32bit [
+      "CFG_ARM32_core=y"
+      "CROSS_COMPILE32=${stdenv.cc.targetPrefix}"
+    ])
+    ++ (lib.optionals is64bit [
+      "CFG_ARM64_core=y"
+      "CROSS_COMPILE64=${stdenv.cc.targetPrefix}"
+    ])
+    ++ extraMakeFlags;
 
   patches = [ ] ++ extraPatches;
 
@@ -87,5 +88,6 @@ stdenv.mkDerivation (finalAttrs: rec {
 
   passthru = {
     elf = "${finalAttrs.finalPackage.out}/core/tee.elf";
-  } // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
+  }
+  // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

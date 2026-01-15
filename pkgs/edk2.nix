@@ -11,6 +11,7 @@
   src,
   dsc,
   buildConfig ? "RELEASE",
+  edk2Path ? ".",
   packagesPath ? [ ],
   gccPrefix ? "GCC", # or GCC5
   extraBaseToolsMakeFlags ? [ ],
@@ -68,14 +69,14 @@ stdenv.mkDerivation (finalAttrs: {
   patches = [ ] ++ extraPatches;
 
   postPatch = ''
-    patchShebangs ./edk2/BaseTools
+    patchShebangs ./${edk2Path}/BaseTools
   '';
 
   configurePhase = ''
     runHook preConfigure
 
     export WORKSPACE=$PWD/workspace
-    export EDK_TOOLS_PATH="$PWD/edk2/BaseTools"
+    export EDK_TOOLS_PATH="$PWD/${edk2Path}/BaseTools"
 
     PACKAGES_PATH="$PWD"
     for path in ${lib.strings.concatStringsSep " " packagesPath}; do
@@ -84,7 +85,7 @@ stdenv.mkDerivation (finalAttrs: {
     export PACKAGES_PATH
 
     mkdir -p $WORKSPACE
-    source ./edk2/edksetup.sh BaseTools
+    source ./${edk2Path}/edksetup.sh BaseTools
 
     runHook postConfigure
   '';
@@ -92,7 +93,7 @@ stdenv.mkDerivation (finalAttrs: {
   buildPhase = ''
     runHook preBuild
 
-    make -C edk2/BaseTools -j $NIX_BUILD_CORES ${lib.strings.concatStringsSep " " extraBaseToolsMakeFlags}
+    make -C ./${edk2Path}/BaseTools -j $NIX_BUILD_CORES ${lib.strings.concatStringsSep " " extraBaseToolsMakeFlags}
     build -a ${targetArch} -b ${buildConfig} -t ${gccPrefix} -p ${dsc} -n $NIX_BUILD_CORES ${lib.strings.concatStringsSep " " extraBuildFlags}
 
     runHook postBuild

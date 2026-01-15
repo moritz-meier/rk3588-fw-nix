@@ -1,3 +1,5 @@
 .direnv/
 result
-srcs/optee/
+target/
+run-uboot
+run-edk2

@@ -11,7 +11,7 @@
   extraMakeFlags ? [ ],
   extraPatches ? [ ],
   src ? tfa-src,
-  outputFiles ? { }
+  outputFiles ? { },
 }:
 
 stdenv.mkDerivation (finalAttrs: rec {
@@ -64,5 +64,6 @@ stdenv.mkDerivation (finalAttrs: rec {
 
   passthru = {
     elf = "${finalAttrs.finalPackage.out}/${plat}/release/bl31/bl31.elf";
-  } // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
+  }
+  // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

@@ -5,7 +5,9 @@ final: prev: {
   rkbin-bl32 = prev.callPackage ./pkgs/rkbin-bl32.nix { };
 
   trusted-firmware-a = prev.callPackage ./pkgs/trusted-firmware-a.nix { };
+
   optee-os = prev.callPackage ./pkgs/optee-os.nix { };
+  optee-ftpm = prev.callPackage ./pkgs/optee-ftpm.nix { };
 
   uboot = prev.callPackage ./pkgs/uboot.nix { };
   uboot-tools = prev.callPackage ./pkgs/uboot-tools.nix { };
@@ -17,10 +19,12 @@ final: prev: {
 
   edk2 = prev.callPackage ./pkgs/edk2.nix { };
 
+  httpboot = prev.callPackage ./pkgs/httpboot.nix { };
+
   # edk2-rk3588-fit = prev.callPackage ./pkgs/edk2-rk3588-fit.nix { };
   # edk2-rk3588-img = prev.callPackage ./pkgs/edk2-rk3588-img.nix { };
 
-  # flash-spi-cmd = prev.callPackage ./pkgs/flash-spi-cmd.nix { };
+  flash-spi-cmd = prev.callPackage ./pkgs/flash-spi-cmd.nix { };
 
   rkbin-src = prev.fetchFromGitLab {
     domain = "gitlab.collabora.com";
@@ -43,6 +47,13 @@ final: prev: {
     repo = "optee_os";
     rev = "master";
     hash = "sha256-eFUVIOWTZQuB7+iRjGXQayXx65SSimHrZ1zyZpW++bk=";
+  };
+
+  optee-ftpm-src = final.fetchFromGitHub {
+    owner = "OP-TEE";
+    repo = "optee_ftpm";
+    rev = "master";
+    hash = "sha256-WGEpDd+yokJinTFtN7W6phUZHxBoRaJq+hvmSsY3HXU=";
   };
 
   uboot-src = prev.fetchFromGitLab {
