@@ -71,10 +71,6 @@
 
             CONFIG_NET_LWIP=y
 
-            CONFIG_WGET_HTTPS=y
-
-            CONFIG_EFI_HTTP_BOOT=y
-
             CONFIG_CMD_GPT=y
             CONFIG_CMD_GPT_RENAME=y
             CONFIG_CMD_EFIDEBUG=y
@@ -103,10 +99,6 @@
             CONFIG_LOG_CONSOLE=y
 
             CONFIG_NET_LWIP=y
-
-            CONFIG_WGET_HTTPS=y
-
-            CONFIG_EFI_HTTP_BOOT=y
 
             CONFIG_CMD_GPT=y
             CONFIG_CMD_GPT_RENAME=y

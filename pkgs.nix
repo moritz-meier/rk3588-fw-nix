@@ -39,14 +39,14 @@ final: prev: {
     owner = "hardware-enablement/rockchip-3588";
     repo = "trusted-firmware-a";
     rev = "rockchip";
-    hash = "sha256-vgisUSH/SEzxGQaPdWZczx8M7cgIaMmmM0BvhyzV33M=";
+    hash = "sha256-G9ELV4VmKz/sWI24ccbXxzOQWfPKOZouDjhFitZ3gCc=";
   };
 
   optee-src = final.fetchFromGitHub {
     owner = "OP-TEE";
     repo = "optee_os";
     rev = "master";
-    hash = "sha256-eFUVIOWTZQuB7+iRjGXQayXx65SSimHrZ1zyZpW++bk=";
+    hash = "sha256-Si+vil1/VuRw6m8Nt4n0cAcrDHdr4uAjFBshyEADao8=";
   };
 
   optee-ftpm-src = final.fetchFromGitHub {
@@ -61,7 +61,7 @@ final: prev: {
     owner = "hardware-enablement/rockchip-3588";
     repo = "u-boot";
     rev = "rockchip";
-    hash = "sha256-nNNSg/lg8MiX9rzdURkC46bw9kEjRu86nG9sjijv/nw=";
+    hash = "sha256-SAMN2vWgE0wKEP9QgYHluvU9WF9gY9Sq3vPIURZIVCo=";
   };
 
   # dt-src = final.fetchgit {
