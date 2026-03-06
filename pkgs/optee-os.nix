@@ -88,6 +88,7 @@ stdenv.mkDerivation (finalAttrs: rec {
 
   passthru = {
     elf = "${finalAttrs.finalPackage.out}/core/tee.elf";
+    bin = "${finalAttrs.finalPackage.out}/core/tee.bin";
   }
   // (lib.attrsets.mapAttrs (name: value: "${finalAttrs.finalPackage.out}/${value}") outputFiles);
 })

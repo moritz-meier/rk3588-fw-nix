@@ -24,6 +24,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
+
           self.overlays.default
           (import rustpkgs)
         ];
@@ -40,13 +41,20 @@
 
         tfa = pkgs.pkgsCross.aarch64-multiplatform.trusted-firmware-a {
           plat = "rk3588";
+          extraMakeFlags = [
+            "CFLAGS=-fomit-frame-pointer" # otherwise secondary cores do not boot correctly
+            "SPD=opteed"
+          ];
         };
 
         optee = pkgs.pkgsCross.aarch64-multiplatform.optee-os {
           plat = "rockchip-rk3588";
+          extraMakeFlags = [
+            "CFG_DT=y"
+          ];
         };
 
-        optee-ftpm = pkgs.pkgsCross.aarch64-multiplatform.optee-ftpm { inherit optee; };
+        # optee-ftpm = pkgs.pkgsCross.aarch64-multiplatform.optee-ftpm { inherit optee; };
 
         httpboot = pkgs.pkgsCross.aarch64-multiplatform.httpboot;
 
@@ -55,7 +63,7 @@
           extraMakeFlags = [
             "ROCKCHIP_TPL=${rkbin-tpl.bin}"
             "BL31=${tfa.elf}"
-            "TEE=${optee.elf}"
+            "TEE=${optee.bin}"
           ];
 
           extraConfig = ''
@@ -68,6 +76,12 @@
             CONFIG_ENV_IS_NOWHERE=n
             CONFIG_ENV_IS_IN_SPI_FLASH=y
             CONFIG_ENV_OFFSET=0x800000
+
+            CONFIG_TEE=y
+            CONFIG_OPTEE=y
+            CONFIG_OPTEE_LIB=y
+            CONFIG_CMD_OPTEE=y
+            CONFIG_CMD_OPTEE_RPMB=y
 
             CONFIG_NET_LWIP=y
 

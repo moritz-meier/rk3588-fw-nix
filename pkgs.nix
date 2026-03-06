@@ -34,34 +34,31 @@ final: prev: {
     hash = "sha256-gNCZwJd9pjisk6vmvtRNyGSBFfAYOADTa5Nd6Zk+qEk=";
   };
 
-  tfa-src = final.fetchFromGitLab {
-    domain = "gitlab.collabora.com";
-    owner = "hardware-enablement/rockchip-3588";
-    repo = "trusted-firmware-a";
-    rev = "rockchip";
-    hash = "sha256-G9ELV4VmKz/sWI24ccbXxzOQWfPKOZouDjhFitZ3gCc=";
+  tfa-src = final.fetchgit {
+    url = "https://review.trustedfirmware.org/TF-A/trusted-firmware-a";
+    rev = "lts-v2.14.1";
+    hash = "sha256-PLjrleN5pxl3gPH4gTTw1hxDGsmu/pmJRtDqsUZf6AE=";
   };
 
-  optee-src = final.fetchFromGitHub {
-    owner = "OP-TEE";
-    repo = "optee_os";
-    rev = "master";
-    hash = "sha256-Si+vil1/VuRw6m8Nt4n0cAcrDHdr4uAjFBshyEADao8=";
+  optee-src = final.fetchgit {
+    url = "https://review.trustedfirmware.org/OP-TEE/optee_os";
+    rev = "4.9.0";
+    hash = "sha256-udRTq0Rc8Ez3v9xWwk14EMZHJ7Dk0PwlWuMURLvJNyM=";
   };
 
-  optee-ftpm-src = final.fetchFromGitHub {
-    owner = "OP-TEE";
-    repo = "optee_ftpm";
-    rev = "master";
-    hash = "sha256-WGEpDd+yokJinTFtN7W6phUZHxBoRaJq+hvmSsY3HXU=";
-  };
+  # optee-ftpm-src = final.fetchFromGitHub {
+  #   owner = "OP-TEE";
+  #   repo = "optee_ftpm";
+  #   rev = "master";
+  #   hash = "sha256-WGEpDd+yokJinTFtN7W6phUZHxBoRaJq+hvmSsY3HXU=";
+  # };
 
   uboot-src = prev.fetchFromGitLab {
     domain = "gitlab.collabora.com";
     owner = "hardware-enablement/rockchip-3588";
     repo = "u-boot";
     rev = "rockchip";
-    hash = "sha256-SAMN2vWgE0wKEP9QgYHluvU9WF9gY9Sq3vPIURZIVCo=";
+    hash = "sha256-2401QbHm6c8mTLv4lqpCq3Ho3XY+llL7laxW3EAWkws=";
   };
 
   # dt-src = final.fetchgit {
@@ -94,12 +91,4 @@ final: prev: {
 
     fetchSubmodules = true;
   };
-
-  # uboot-src = final.fetchFromGitLab {
-  #   domain = "gitlab.collabora.com";
-  #   owner = "hardware-enablement/rockchip-3588";
-  #   repo = "u-boot";
-  #   rev = "2025.01-rk3588";
-  #   hash = "sha256-pO3Lcjlgt0wRe2r0HVRIB/KlyQiwYh4mIZ6Zc5Paut0=";
-  # };
 }
